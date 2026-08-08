@@ -1,0 +1,12 @@
+// ==========================================================================
+// Ghost UI — Container
+// ==========================================================================
+
+.op-cb-wrap {
+  max-width: $wrap-max;
+  margin: 0 auto 48px auto;
+  padding: 0 24px;
+  font-family: $font-stack;
+  color: $text;
+  -webkit-font-smoothing: antialiased;
+}

@@ -1,0 +1,103 @@
+// ==========================================================================
+// Ghost UI — Mobile Responsive (≤ 600px)
+// ==========================================================================
+
+@include respond-to(mobile) {
+  .op-cb-wrap {
+    margin: 0 auto 24px auto;
+    padding: 0 12px;
+  }
+
+  // Header
+  .op-cb-header {
+    margin-bottom: $gap;
+    padding: 14px 16px;
+    border-radius: $r;
+    gap: 10px;
+  }
+
+  .op-cb-brand h1 { font-size: 16px; }
+  .op-cb-subtitle  { font-size: 11px; }
+
+  // Grid
+  .op-cb-grid { gap: $gap-sm; }
+
+  .op-cb-grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+
+    > .op-cb-stat-card:first-child {
+      grid-column: span 2;
+      grid-row: span 1;
+    }
+  }
+
+  // Cards
+  .op-cb-card-body   { padding: 14px; }
+  .op-cb-card-header { padding: 12px 14px; }
+
+  .op-cb-card-header h2 { font-size: 12px; }
+
+  // Stat cards — stack vertically
+  .op-cb-stat-card {
+    padding: 14px 16px;
+    gap: $gap-xs;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .op-cb-grid-4 > .op-cb-stat-card:first-child {
+    padding: 18px;
+    flex-direction: row;
+  }
+
+  .op-cb-stat-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 7px;
+
+    .dashicons {
+      font-size: 17px;
+      width: 17px;
+      height: 17px;
+    }
+  }
+
+  .op-cb-stat-value { font-size: 22px; }
+  .op-cb-stat-label { font-size: 9.5px; letter-spacing: .5px; }
+
+  // Forms
+  .op-cb-form-group {
+    margin-bottom: 14px;
+
+    label { font-size: 11.5px; }
+  }
+
+  // Buttons full-width
+  .op-cb-wrap .button {
+    @include btn-full;
+  }
+
+  .op-cb-btn-lg { width: 100%; }
+
+  // Table — hide config columns
+  .op-cb-table {
+    .col-config,
+    .col-thankyou { display: none; }
+
+    th, td {
+      padding: 8px 10px !important;
+      font-size: 11.5px;
+    }
+  }
+
+  .op-cb-table-info td {
+    padding: 6px 0;
+    font-size: 11.5px;
+  }
+
+  // Utilities
+  .op-cb-mt-3 { margin-top: $gap-sm; }
+  .op-cb-mt-4 { margin-top: $gap; }
+
+  .op-cb-header-compact .op-cb-brand h1 { font-size: 15px; }
+}

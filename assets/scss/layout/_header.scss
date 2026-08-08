@@ -1,0 +1,71 @@
+// ==========================================================================
+// Ghost UI — Header
+// ==========================================================================
+
+.op-cb-header {
+  @include flex-between;
+  flex-wrap: wrap;
+  gap: $gap;
+  margin-bottom: 24px;
+  padding: 20px 24px;
+  @include ghost-card;
+
+  .op-cb-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .op-cb-logo-icon {
+    font-size: 30px;
+    width: 30px;
+    height: 30px;
+    color: $primary;
+    opacity: .8;
+  }
+
+  .op-cb-actions .button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    height: auto;
+    font-size: 12.5px;
+    font-weight: $fw-heading;
+    border-radius: $r-sm;
+    transition: all $t;
+  }
+
+  .button-primary {
+    background: $primary;
+    border-color: transparent;
+    color: #fff;
+
+    &:hover {
+      background: #6e7af0;
+      border-color: transparent;
+    }
+  }
+
+  .button-secondary {
+    background: transparent;
+    border: 1px solid $border;
+    color: $text-soft;
+
+    &:hover {
+      border-color: $border-focus;
+      color: $primary;
+      background: $primary-soft;
+    }
+  }
+}
+
+// ── Compact Variant ────────────────────────────────────────────────────────
+.op-cb-header-compact {
+  margin-bottom: 18px;
+  padding: 14px 20px;
+
+  .op-cb-brand h1 {
+    font-size: 16px;
+  }
+}

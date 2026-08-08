@@ -1,0 +1,5 @@
+# Force GitHub Linguist to classify all PHP files as PHP
+*.php linguist-language=PHP
+
+# Ignore vendor assets from repository language statistics
+assets/vendor/* linguist-vendored

@@ -1,0 +1,58 @@
+// ==========================================================================
+// Ghost UI — Empty State
+// ==========================================================================
+
+.op-cb-empty-state {
+  text-align: center;
+  padding: 64px 24px;
+
+  h3 {
+    font-size: 17px;
+    font-weight: $fw-heading;
+    color: $text;
+    margin: 0 0 8px 0;
+  }
+
+  p {
+    font-size: 13px;
+    color: $text-muted;
+    margin: 0 0 16px 0;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+.op-cb-empty-icon {
+  font-size: 52px;
+  width: 52px;
+  height: 52px;
+  color: $text-muted;
+  opacity: .2;
+  margin-bottom: 16px;
+}
+
+// ── Test Box ───────────────────────────────────────────────────────────────
+.op-cb-test-box {
+  display: flex;
+  align-items: center;
+  gap: $gap-sm;
+  flex-wrap: wrap;
+}
+
+.op-cb-test-result {
+  font-size: 13px;
+  font-weight: 500;
+  padding: 6px 14px;
+  border-radius: $r-sm;
+
+  &.op-cb-status-active {
+    background: $success-soft;
+    color: #065f46;
+  }
+
+  &.op-cb-status-error {
+    background: $danger-soft;
+    color: #b91c1c;
+  }
+}

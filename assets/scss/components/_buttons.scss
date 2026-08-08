@@ -1,0 +1,57 @@
+// ==========================================================================
+// Ghost UI — Buttons
+// ==========================================================================
+
+.op-cb-wrap .button {
+  border-radius: $r-sm !important;
+  transition: all $t !important;
+  font-weight: $fw-heading !important;
+
+  // ── Primary ──────────────────────────────────────────────────────────
+  &-primary {
+    background: $primary !important;
+    border-color: transparent !important;
+    color: #fff !important;
+    text-shadow: none !important;
+
+    &:hover {
+      background: #6e7af0 !important;
+      border-color: transparent !important;
+    }
+  }
+
+  // ── Small ────────────────────────────────────────────────────────────
+  &-small {
+    padding: 4px 11px !important;
+    font-size: 11.5px !important;
+    line-height: 1.6 !important;
+    min-height: auto !important;
+  }
+
+  // ── Link Delete ──────────────────────────────────────────────────────
+  &-link-delete {
+    color: $text-muted !important;
+    border-color: transparent !important;
+    background: transparent !important;
+
+    &:hover {
+      color: #e06060 !important;
+      background: $danger-soft !important;
+    }
+  }
+
+  // ── Hero ─────────────────────────────────────────────────────────────
+  &-hero {
+    padding: 13px 24px !important;
+    font-size: 14px !important;
+    font-weight: $fw-bold !important;
+    letter-spacing: -.1px;
+    background: $primary !important;
+    border-color: transparent !important;
+
+    &:hover {
+      background: #6e7af0 !important;
+      border-color: transparent !important;
+    }
+  }
+}

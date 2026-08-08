@@ -1,0 +1,59 @@
+// ==========================================================================
+// Ghost UI — Product Picker
+// ==========================================================================
+
+.op-cb-product-picker {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: $gap-xs;
+  max-height: 260px;
+  overflow-y: auto;
+  padding: $gap;
+  border: 1px solid $border;
+  border-radius: $r;
+  background: $bg;
+}
+
+.op-cb-product-checkbox {
+  display: flex;
+  align-items: center;
+  padding: 10px 14px;
+  background: $surface;
+  border: 1px solid rgba(0, 0, 0, .04);
+  border-radius: $r-sm;
+  cursor: pointer;
+  transition: all $t-fast;
+  user-select: none;
+
+  &:hover {
+    border-color: $border-focus;
+  }
+
+  &.is-selected {
+    background: $primary-soft;
+    border-color: rgba($primary, .25);
+  }
+
+  input[type="checkbox"] {
+    accent-color: $primary;
+    width: 15px;
+    height: 15px;
+    margin: 0;
+    flex-shrink: 0;
+  }
+}
+
+.op-cb-product-title {
+  margin-left: 10px;
+  font-size: 13px;
+  font-weight: 450;
+  color: $text;
+  flex: 1;
+}
+
+.op-cb-product-price {
+  font-size: 12.5px;
+  font-weight: $fw-bold;
+  color: $primary;
+  flex-shrink: 0;
+}

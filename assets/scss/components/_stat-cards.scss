@@ -1,0 +1,92 @@
+// ==========================================================================
+// Ghost UI — Stat Cards
+// ==========================================================================
+
+$stat-icon-size: 44px;
+$stat-hero-icon-size: 56px;
+
+.op-cb-stat-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 22px 24px;
+  gap: 12px;
+  @include ghost-surface;
+  transition: border-color $t-slow;
+  position: relative;
+  overflow: hidden;
+
+  &:hover {
+    border-color: $border-hover;
+  }
+
+  // ── Hero Stat (first card, spans 2×2) ──────────────────────────────────
+  .op-cb-grid-4 > &:first-child {
+    grid-column: span 2;
+    grid-row: span 2;
+    padding: 30px 32px;
+    gap: 16px;
+    flex-direction: row;
+    align-items: center;
+    background: linear-gradient(160deg, #fafbff 0%, $primary-soft 100%);
+    border-color: rgba($primary, .12);
+  }
+}
+
+// ── Icon ───────────────────────────────────────────────────────────────────
+.op-cb-stat-icon {
+  width: $stat-icon-size;
+  height: $stat-icon-size;
+  border-radius: $r-sm;
+  @include flex-center;
+  flex-shrink: 0;
+
+  .dashicons {
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+  }
+
+  .op-cb-grid-4 > .op-cb-stat-card:first-child & {
+    width: $stat-hero-icon-size;
+    height: $stat-hero-icon-size;
+    border-radius: $r;
+
+    .dashicons {
+      font-size: 30px;
+      width: 30px;
+      height: 30px;
+    }
+  }
+}
+
+// ── Stat Icon Color Variants ───────────────────────────────────────────────
+.op-cb-stat-wc .op-cb-stat-icon       { background: #f0f0ff; color: $primary; }
+.op-cb-stat-landings .op-cb-stat-icon { background: #f0f5ff; color: #6080e8; }
+.op-cb-stat-active .op-cb-stat-icon   { background: #f0fdf7; color: #34d399; }
+.op-cb-stat-orders .op-cb-stat-icon   { background: #fffdf5; color: #fbbf24; }
+
+// ── Label & Value ──────────────────────────────────────────────────────────
+.op-cb-stat-label {
+  font-size: 10.5px;
+  color: $text-muted;
+  text-transform: uppercase;
+  letter-spacing: .8px;
+  font-weight: $fw-bold;
+
+  .op-cb-grid-4 > .op-cb-stat-card:first-child & {
+    font-size: 11.5px;
+  }
+}
+
+.op-cb-stat-value {
+  font-size: 28px;
+  font-weight: $fw-heavy;
+  color: $text;
+  letter-spacing: -.5px;
+  line-height: 1;
+
+  .op-cb-grid-4 > .op-cb-stat-card:first-child & {
+    font-size: 34px;
+  }
+}

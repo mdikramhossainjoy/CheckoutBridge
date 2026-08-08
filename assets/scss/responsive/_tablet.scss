@@ -1,0 +1,114 @@
+// ==========================================================================
+// Ghost UI — Tablet Responsive (≤ 960px)
+// ==========================================================================
+
+@include respond-to(tablet) {
+  // Grid collapses
+  .op-cb-grid-main { grid-template-columns: 1fr; }
+  .op-cb-grid-2     { grid-template-columns: 1fr; }
+  .op-cb-grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+
+    > .op-cb-stat-card:first-child {
+      grid-column: span 2;
+      grid-row: span 1;
+    }
+  }
+
+  // Header stacks
+  .op-cb-header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 18px;
+
+    .op-cb-actions {
+      width: 100%;
+
+      .button {
+        @include btn-full;
+      }
+    }
+  }
+
+  // Stat cards shrink
+  .op-cb-stat-card {
+    padding: 18px;
+    gap: $gap-xs;
+  }
+
+  .op-cb-stat-icon {
+    width: 38px;
+    height: 38px;
+
+    .dashicons {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  .op-cb-stat-value { font-size: 24px; }
+  .op-cb-stat-label { font-size: 10px; }
+
+  // Cards
+  .op-cb-card-body   { padding: 18px; }
+  .op-cb-card-header { padding: 14px 18px; }
+
+  .op-cb-card-header h2 { font-size: 12px; }
+
+  // Product picker
+  .op-cb-product-picker   { grid-template-columns: 1fr; max-height: 200px; }
+  .op-cb-product-checkbox { padding: 8px 10px; }
+
+  // Form elements full-width
+  .op-cb-input,
+  .op-cb-select,
+  .op-cb-textarea,
+  .op-cb-input-sm,
+  .op-cb-select-sm {
+    width: 100% !important;
+  }
+
+  // Token
+  .op-cb-token-field { flex-direction: column; }
+  .op-cb-token-code {
+    flex-wrap: wrap;
+
+    code {
+      word-break: break-all;
+      max-width: 100%;
+      font-size: 10px;
+    }
+  }
+
+  // Code blocks
+  .op-cb-code-block { font-size: 11px; padding: 14px; }
+
+  // Callouts
+  .op-cb-callout { padding: 14px 16px; }
+
+  // Empty state
+  .op-cb-empty-state { padding: 40px 18px; }
+  .op-cb-empty-icon {
+    font-size: 40px;
+    width: 40px;
+    height: 40px;
+  }
+
+  // API docs
+  .op-cb-api-endpoint h3 {
+    font-size: 13px;
+
+    code {
+      font-size: 10px;
+      word-break: break-all;
+    }
+  }
+
+  // Pills & badges
+  .op-cb-status-pill { font-size: 11px; padding: 4px 10px; }
+  .op-cb-badge       { font-size: 10px; padding: 2px 7px; }
+
+  // Sidebar
+  .op-cb-form-sidebar .op-cb-card { position: static; }
+}

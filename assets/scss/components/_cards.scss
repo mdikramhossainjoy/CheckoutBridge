@@ -1,0 +1,32 @@
+// ==========================================================================
+// Ghost UI — Cards
+// ==========================================================================
+
+.op-cb-card {
+  @include ghost-card;
+  overflow: hidden;
+
+  &-header {
+    display: flex;
+    align-items: center;
+    padding: 16px 22px;
+    border-bottom: 1px solid $border;
+
+    &.flex-between {
+      justify-content: space-between;
+    }
+  }
+
+  &-body {
+    padding: 22px;
+
+    &.op-cb-p-0 {
+      padding: 0;
+    }
+  }
+
+  &-footer {
+    padding: 14px 22px;
+    border-top: 1px solid $border;
+  }
+}

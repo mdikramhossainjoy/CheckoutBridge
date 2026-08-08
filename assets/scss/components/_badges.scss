@@ -1,0 +1,48 @@
+// ==========================================================================
+// Ghost UI — Badges & Status Pills
+// ==========================================================================
+
+// ── Badges ─────────────────────────────────────────────────────────────────
+.op-cb-badge {
+  @include pill(3px, 10px);
+  font-size: 10.5px;
+  font-weight: $fw-heading;
+  letter-spacing: .2px;
+  line-height: 1.5;
+  border: 1px solid transparent;
+
+  &-primary   { background: $primary-soft; color: $primary; border-color: rgba($primary, .15); }
+  &-success   { background: $success-soft; color: #10b981; border-color: rgba($success, .15); }
+  &-info      { background: #f0f5ff; color: #5070d8; border-color: rgba(#6080e8, .15); }
+  &-secondary { background: #f8f8fb; color: #9090a4; border-color: rgba(0, 0, 0, .06); }
+}
+
+// ── Status Pills ───────────────────────────────────────────────────────────
+.op-cb-status-pill {
+  @include pill(5px, 14px);
+  gap: 7px;
+  font-size: 12px;
+  font-weight: $fw-heading;
+
+  &::before {
+    @include dot(7px);
+  }
+
+  &-active {
+    background: $success-soft;
+    color: #065f46;
+    &::before { background: $success; }
+  }
+
+  &-inactive {
+    background: #f8f8fb;
+    color: #9090a4;
+    &::before { background: #c0c0d0; }
+  }
+
+  &-error {
+    background: $danger-soft;
+    color: #b91c1c;
+    &::before { background: $danger; }
+  }
+}

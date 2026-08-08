@@ -1,0 +1,22 @@
+// ==========================================================================
+// Ghost UI — Code Blocks
+// ==========================================================================
+
+.op-cb-code-block {
+  background: #1a1a24;
+  color: #c8c8d8;
+  padding: 20px 22px;
+  border-radius: $r;
+  overflow-x: auto;
+  font-family: $font-mono;
+  font-size: 12.5px;
+  line-height: 1.7;
+  border: 1px solid rgba(255, 255, 255, .04);
+
+  code {
+    background: none !important;
+    padding: 0 !important;
+    color: inherit;
+    font-size: inherit;
+  }
+}

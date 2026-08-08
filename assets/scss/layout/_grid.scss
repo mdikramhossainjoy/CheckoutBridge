@@ -1,0 +1,28 @@
+// ==========================================================================
+// Ghost UI — Grid System
+// ==========================================================================
+
+.op-cb-grid {
+  display: grid;
+  gap: $gap;
+
+  // Dashboard — 3-column bento
+  &-4 {
+    grid-template-columns: repeat(3, 1fr);
+
+    > .op-cb-stat-card:first-child {
+      grid-column: span 2;
+      grid-row: span 2;
+    }
+  }
+
+  // Info row
+  &-2 {
+    grid-template-columns: 3fr 2fr;
+  }
+
+  // Form layout
+  &-main {
+    grid-template-columns: 2fr 1fr;
+  }
+}

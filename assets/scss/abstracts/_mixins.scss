@@ -1,0 +1,76 @@
+// ==========================================================================
+// CheckoutBridge — Minimal Modern SCSS Mixins
+// ==========================================================================
+
+// ── Responsive Breakpoints ─────────────────────────────────────────────────
+@mixin respond-to($breakpoint) {
+  @if $breakpoint == tablet {
+    @media (max-width: $bp-tablet) { @content; }
+  } @else if $breakpoint == mobile {
+    @media (max-width: $bp-mobile) { @content; }
+  }
+}
+
+// ── Crisp Solid Minimal Card ───────────────────────────────────────────────
+@mixin minimal-card {
+  background: $surface-card;
+  border: 1px solid $border-color;
+  border-radius: $r-md;
+  box-shadow: $shadow-card;
+  transition: border-color 200ms ease, box-shadow 200ms ease;
+
+  &:hover {
+    border-color: $border-hover;
+    box-shadow: $shadow-hover;
+  }
+}
+
+// ── Focus Ring (Clean, no glow) ───────────────────────────────────────────
+@mixin focus-ring {
+  border-color: $primary !important;
+  box-shadow: 0 0 0 2px rgba($primary, 0.15) !important;
+  outline: none !important;
+}
+
+// ── Flex Layout Helpers ──────────────────────────────────────────────────
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+// ── Pill Shape ─────────────────────────────────────────────────────────────
+@mixin pill($padding-y: 4px, $padding-x: 10px) {
+  display: inline-flex;
+  align-items: center;
+  padding: $padding-y $padding-x;
+  border-radius: $r-pill;
+  font-family: $font-heading;
+  font-weight: $fw-medium;
+}
+
+// ── Live Dot Pulse Indicator ───────────────────────────────────────────────
+@mixin dot-indicator($size: 8px, $color: $success) {
+  content: "";
+  width: $size;
+  height: $size;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: $color;
+}
+
+// ── Text Truncate ──────────────────────────────────────────────────────────
+@mixin truncate($max-width: 190px) {
+  display: inline-block;
+  max-width: $max-width;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+}

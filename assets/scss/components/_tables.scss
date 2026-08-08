@@ -1,0 +1,84 @@
+// ==========================================================================
+// Ghost UI — Tables
+// ==========================================================================
+
+.op-cb-table {
+  border: none !important;
+  margin: 0 !important;
+
+  thead th {
+    background: transparent !important;
+    color: $text-muted !important;
+    font-weight: $fw-heading !important;
+    font-size: 10.5px !important;
+    text-transform: uppercase;
+    letter-spacing: .7px;
+    padding: 14px 18px !important;
+    border-bottom: 1px solid $border !important;
+  }
+
+  tbody {
+    td {
+      padding: 13px 18px !important;
+      vertical-align: middle;
+      border-bottom: 1px solid rgba(0, 0, 0, .03);
+      font-size: 13px;
+    }
+
+    tr {
+      transition: background $t-fast;
+
+      &:hover {
+        background: rgba(0, 0, 0, .015) !important;
+      }
+
+      &:last-child td {
+        border-bottom: none;
+      }
+    }
+  }
+
+  td.col-token,
+  td.col-actions {
+    white-space: nowrap;
+  }
+
+  td.col-orders {
+    text-align: center;
+    font-weight: 650;
+    font-size: 15px;
+    color: $text-soft;
+  }
+
+  .column-title a {
+    color: $text;
+    font-weight: $fw-heading;
+    text-decoration: none;
+    transition: color $t-fast;
+
+    &:hover {
+      color: $primary;
+    }
+  }
+}
+
+// ── Info Table (Dashboard) ─────────────────────────────────────────────────
+.op-cb-table-info {
+  width: 100%;
+  border-collapse: collapse;
+
+  td {
+    padding: 11px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, .03);
+    font-size: 13px;
+
+    &:first-child {
+      color: $text-muted;
+      width: 45%;
+    }
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+}
