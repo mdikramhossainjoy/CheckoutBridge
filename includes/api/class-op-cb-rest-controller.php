@@ -31,23 +31,27 @@ class OP_CB_REST_Controller {
      * Prevents Imunify360, ModSecurity, LiteSpeed WAF & cPanel proxies from dropping cross-origin requests
      */
     public static function handle_early_waf_cors() {
-        $uri = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
+        $uri = isset($_SERVER['REQUEST_URI']) ? sanitize_text_field(wp_unslash($_SERVER['REQUEST_URI'])) : '';
 
         // Check if hitting CheckoutBridge REST API or sending token headers
         if (strpos($uri, '/checkoutbridge/v1/') !== false || !empty($_SERVER['HTTP_X_OP_CB_TOKEN'])) {
 
             // Send CORS & WAF Bypass Headers early before output buffering
             if (!headers_sent()) {
-                $origin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : '*';
-                header('Access-Control-Allow-Origin: ' . $origin);
+                $origin = get_http_origin();
+                if ($origin) {
+                    header('Access-Control-Allow-Origin: ' . esc_url_raw($origin));
+                    header('Access-Control-Allow-Credentials: true');
+                } else {
+                    header('Access-Control-Allow-Origin: ' . esc_url_raw(home_url()));
+                }
                 header('Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT');
                 header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With, X-OP-CB-Token, X-OP-CB-Signature, X-HTTP-Method-Override');
-                header('Access-Control-Allow-Credentials: true');
                 header('Vary: Origin');
             }
 
             // Immediately answer OPTIONS preflight requests so Imunify360 WAF never blocks preflight calls
-            if (isset($_SERVER['REQUEST_METHOD']) && strtoupper($_SERVER['REQUEST_METHOD']) === 'OPTIONS') {
+            if (isset($_SERVER['REQUEST_METHOD']) && strtoupper(sanitize_text_field(wp_unslash($_SERVER['REQUEST_METHOD']))) === 'OPTIONS') {
                 status_header(204);
                 header('Content-Type: text/plain; charset=UTF-8');
                 header('Content-Length: 0');
@@ -89,12 +93,12 @@ class OP_CB_REST_Controller {
     public static function register_routes() {
         // Endpoint 1: Create Order (POST)
         register_rest_route(self::NAMESPACE, '/create-order', array(
-            'methods'             => array('POST', 'GET'), // Supports GET fallback for strict host WAFs
+            'methods'             => \WP_REST_Server::CREATABLE,
             'callback'            => array(__CLASS__, 'create_order_handler'),
             'permission_callback' => '__return_true'
         ));
 
-        // Endpoint 2: Get Order Details for Thank You page (POST)
+        // Endpoint 2: Get Order Details for Thank You page (POST / GET)
         register_rest_route(self::NAMESPACE, '/order-details', array(
             'methods'             => array('POST', 'GET'),
             'callback'            => array(__CLASS__, 'order_details_handler'),
@@ -103,15 +107,22 @@ class OP_CB_REST_Controller {
 
         // Endpoint 3: Integration Health Check (GET)
         register_rest_route(self::NAMESPACE, '/health', array(
-            'methods'             => 'GET',
+            'methods'             => \WP_REST_Server::READABLE,
             'callback'            => array(__CLASS__, 'health_check_handler'),
             'permission_callback' => '__return_true'
         ));
 
         // Endpoint 4: Validate Coupon / Promo Code (POST)
         register_rest_route(self::NAMESPACE, '/validate-coupon', array(
-            'methods'             => array('POST', 'GET'),
+            'methods'             => \WP_REST_Server::CREATABLE,
             'callback'            => array(__CLASS__, 'validate_coupon_handler'),
+            'permission_callback' => '__return_true'
+        ));
+
+        // Endpoint 5: Customer Phone Autofill Lookup (POST)
+        register_rest_route(self::NAMESPACE, '/customer-lookup', array(
+            'methods'             => \WP_REST_Server::CREATABLE,
+            'callback'            => array(__CLASS__, 'customer_lookup_handler'),
             'permission_callback' => '__return_true'
         ));
     }
@@ -153,12 +164,11 @@ class OP_CB_REST_Controller {
             }
         }
 
-        // 4. Fallback to WP REST Query Params, $_GET & $_POST
+        // 4. Fallback to WP REST Query Params
         $query_params = $request->get_query_params();
         if (is_array($query_params) && !empty($query_params)) {
             $params = array_merge($query_params, $params);
         }
-        $params = array_merge($_GET, $_POST, $params);
 
         // 5. Imunify360 WAF Evasion: Support Base64 Encoded Payload (`payload=...` or `data=...`)
         $raw_payload = '';
@@ -175,14 +185,14 @@ class OP_CB_REST_Controller {
             }
         }
 
-        // 6. Header Token Fallback (If WAF or cPanel proxy strips landing_token parameter or query string)
-        if (empty($params['landing_token'])) {
+        // 6. Header Token Fallback (If WAF or cPanel proxy strips bridge_token parameter or query string)
+        if (empty($params['bridge_token'])) {
             if (!empty($_SERVER['HTTP_X_OP_CB_TOKEN'])) {
-                $params['landing_token'] = sanitize_text_field($_SERVER['HTTP_X_OP_CB_TOKEN']);
-            } elseif (!empty($_GET['landing_token'])) {
-                $params['landing_token'] = sanitize_text_field($_GET['landing_token']);
+                $params['bridge_token'] = sanitize_text_field(wp_unslash($_SERVER['HTTP_X_OP_CB_TOKEN']));
+            } elseif (!empty($_GET['bridge_token'])) {
+                $params['bridge_token'] = sanitize_text_field(wp_unslash($_GET['bridge_token']));
             } elseif (!empty($_GET['token'])) {
-                $params['landing_token'] = sanitize_text_field($_GET['token']);
+                $params['bridge_token'] = sanitize_text_field(wp_unslash($_GET['token']));
             }
         }
 
@@ -203,10 +213,8 @@ class OP_CB_REST_Controller {
             $coupon_code = sanitize_text_field($params['coupon_code']);
         } elseif (!empty($params['coupon'])) {
             $coupon_code = sanitize_text_field($params['coupon']);
-        } elseif (!empty($params['promo_code'])) {
-            $coupon_code = sanitize_text_field($params['promo_code']);
         }
-        $params['coupon_code'] = strtoupper(trim($coupon_code));
+        $params['coupon_code'] = $coupon_code;
 
         return $params;
     }
@@ -215,56 +223,55 @@ class OP_CB_REST_Controller {
      * Route Handler: POST /create-order
      */
     public static function create_order_handler($request) {
+        // Rate Limiting: 20 requests per 60 seconds per IP
+        $client_ip = self::get_client_ip();
+        if (!OP_CB_Security::check_rate_limit('order_' . $client_ip, 20, 60)) {
+            return new WP_REST_Response(array(
+                'success' => false,
+                'error'   => 'rate_limited',
+                'message' => __('Too many order requests. Please try again in a few moments.', 'op-checkoutbridge')
+            ), 429);
+        }
+
         try {
             $params = self::extract_request_params($request);
 
-            // Rate Limiting: 15 requests per 60 seconds per IP
-            $client_ip = self::get_client_ip();
-            if (!OP_CB_Security::check_rate_limit('create_order_' . $client_ip, 15, 60)) {
+            // Validate Bridge Token
+            $token = !empty($params['bridge_token']) ? $params['bridge_token'] : (!empty($params['token']) ? $params['token'] : '');
+            if (empty($token)) {
                 return new WP_REST_Response(array(
                     'success' => false,
-                    'error'   => 'rate_limited',
-                    'message' => __('Too many requests. Please try again shortly.', 'checkoutbridge')
-                ), 429);
-            }
-
-            $landing_token = isset($params['landing_token']) ? sanitize_text_field($params['landing_token']) : '';
-            if (empty($landing_token)) {
-                return new WP_REST_Response(array(
-                    'success' => false,
-                    'error'   => 'missing_landing_token',
-                    'message' => __('Landing token is required.', 'checkoutbridge')
+                    'error'   => 'missing_token',
+                    'message' => __('Bridge token is required.', 'op-checkoutbridge')
                 ), 400);
             }
 
-            // Fetch Bridge Record
-            $landing = OP_CB_Bridge_Repository::get_by_token($landing_token);
+            $landing = OP_CB_Bridge_Repository::get_by_token($token);
             if (!$landing) {
                 return new WP_REST_Response(array(
                     'success' => false,
-                    'error'   => 'invalid_landing_token',
-                    'message' => __('Invalid or unknown landing token.', 'checkoutbridge')
+                    'error'   => 'invalid_token',
+                    'message' => __('Invalid or inactive bridge token.', 'op-checkoutbridge')
                 ), 404);
             }
 
             if ($landing['status'] !== 'active') {
                 return new WP_REST_Response(array(
                     'success' => false,
-                    'error'   => 'landing_inactive',
-                    'message' => __('This landing campaign is currently inactive.', 'checkoutbridge')
+                    'error'   => 'campaign_inactive',
+                    'message' => __('This bridge campaign is currently inactive.', 'op-checkoutbridge')
                 ), 403);
             }
 
-            // Check Allowed Origins (CORS Check)
+            // Validate Allowed Origins (CORS Check)
             if (!OP_CB_Security::is_origin_allowed($landing['allowed_origins'])) {
                 return new WP_REST_Response(array(
                     'success' => false,
-                    'error'   => 'origin_forbidden',
-                    'message' => __('Domain origin is not authorized for this landing page.', 'checkoutbridge')
+                    'error'   => 'forbidden_origin',
+                    'message' => __('Requests from this origin domain are not permitted.', 'op-checkoutbridge')
                 ), 403);
             }
 
-            // Extract Customer & Shipping Payloads
             $customer_data = isset($params['customer']) && is_array($params['customer']) ? $params['customer'] : array();
             $shipping_data = isset($params['shipping']) && is_array($params['shipping']) ? $params['shipping'] : array();
 
@@ -275,18 +282,22 @@ class OP_CB_REST_Controller {
             $velocity_hours = isset($landing['velocity_hours']) ? intval($landing['velocity_hours']) : 24;
 
             if (!empty($customer_phone) && !OP_CB_Security::check_phone_order_velocity($customer_phone, $phone_limit, $velocity_hours)) {
+                /* translators: 1: limit count, 2: timeframe hours */
+                $phone_limit_msg = sprintf(__('Maximum order limit (%1$d) reached for this phone number within %2$d hours. Please contact customer support.', 'op-checkoutbridge'), $phone_limit, $velocity_hours);
                 return new WP_REST_Response(array(
                     'success' => false,
                     'error'   => 'phone_velocity_limit_exceeded',
-                    'message' => sprintf(__('Maximum order limit (%d) reached for this phone number within %d hours. Please contact customer support.', 'checkoutbridge'), $phone_limit, $velocity_hours)
+                    'message' => $phone_limit_msg
                 ), 429);
             }
 
             if (!empty($client_ip) && !OP_CB_Security::check_ip_order_velocity($client_ip, $ip_limit, $velocity_hours)) {
+                /* translators: 1: limit count, 2: timeframe hours */
+                $ip_limit_msg = sprintf(__('Maximum order limit (%1$d) reached from your IP address within %2$d hours.', 'op-checkoutbridge'), $ip_limit, $velocity_hours);
                 return new WP_REST_Response(array(
                     'success' => false,
                     'error'   => 'ip_velocity_limit_exceeded',
-                    'message' => sprintf(__('Maximum order limit (%d) reached from your IP address within %d hours.', 'checkoutbridge'), $ip_limit, $velocity_hours)
+                    'message' => $ip_limit_msg
                 ), 429);
             }
 
@@ -300,7 +311,7 @@ class OP_CB_REST_Controller {
                     return new WP_REST_Response(array(
                         'success' => false,
                         'error'   => 'invalid_shipping_signature',
-                        'message' => __('Shipping signature verification failed. The shipping data may have been tampered with.', 'checkoutbridge')
+                        'message' => __('Shipping signature verification failed. The shipping data may have been tampered with.', 'op-checkoutbridge')
                     ), 403);
                 }
                 // Mark as pre-verified so the order engine trusts this shipping data
@@ -336,15 +347,10 @@ class OP_CB_REST_Controller {
             ), 201);
 
         } catch (\Throwable $e) {
-            // Log the error for admin debugging
-            if (defined('WP_DEBUG') && WP_DEBUG) {
-                error_log('[CheckoutBridge] Order creation exception: ' . $e->getMessage());
-            }
-
             return new WP_REST_Response(array(
                 'success' => false,
                 'error'   => 'internal_error',
-                'message' => __('An internal server error occurred while creating the order. Please try again.', 'checkoutbridge')
+                'message' => __('An internal server error occurred while creating the order. Please try again.', 'op-checkoutbridge')
             ), 500);
         }
     }
@@ -359,7 +365,7 @@ class OP_CB_REST_Controller {
             return new WP_REST_Response(array(
                 'success' => false,
                 'error'   => 'rate_limited',
-                'message' => __('Too many requests. Please try again shortly.', 'checkoutbridge')
+                'message' => __('Too many requests. Please try again shortly.', 'op-checkoutbridge')
             ), 429);
         }
 
@@ -370,7 +376,7 @@ class OP_CB_REST_Controller {
             return new WP_REST_Response(array(
                 'success' => false,
                 'error'   => 'missing_token',
-                'message' => __('Order redirect token is required.', 'checkoutbridge')
+                'message' => __('Order redirect token is required.', 'op-checkoutbridge')
             ), 400);
         }
 
@@ -380,7 +386,7 @@ class OP_CB_REST_Controller {
             return new WP_REST_Response(array(
                 'success' => false,
                 'error'   => 'invalid_token',
-                'message' => __('Order redirect token is invalid or has expired.', 'checkoutbridge')
+                'message' => __('Order redirect token is invalid or has expired.', 'op-checkoutbridge')
             ), 401);
         }
 
@@ -409,29 +415,29 @@ class OP_CB_REST_Controller {
                 'success' => false,
                 'valid'   => false,
                 'error'   => 'rate_limited',
-                'message' => __('Too many requests. Please try again shortly.', 'checkoutbridge')
+                'message' => __('Too many requests. Please try again shortly.', 'op-checkoutbridge')
             ), 429);
         }
 
         $params = self::extract_request_params($request);
 
-        $landing_token = isset($params['landing_token']) ? sanitize_text_field($params['landing_token']) : '';
-        if (empty($landing_token)) {
+        $bridge_token = !empty($params['bridge_token']) ? sanitize_text_field($params['bridge_token']) : '';
+        if (empty($bridge_token)) {
             return new WP_REST_Response(array(
                 'success' => false,
                 'valid'   => false,
-                'error'   => 'missing_landing_token',
-                'message' => __('Landing token is required.', 'checkoutbridge')
+                'error'   => 'missing_bridge_token',
+                'message' => __('Bridge token is required.', 'op-checkoutbridge')
             ), 400);
         }
 
-        $landing = OP_CB_Bridge_Repository::get_by_token($landing_token);
+        $landing = OP_CB_Bridge_Repository::get_by_token($bridge_token);
         if (!$landing) {
             return new WP_REST_Response(array(
                 'success' => false,
                 'valid'   => false,
-                'error'   => 'invalid_landing_token',
-                'message' => __('Invalid or unknown landing token.', 'checkoutbridge')
+                'error'   => 'invalid_bridge_token',
+                'message' => __('Invalid or unknown bridge token.', 'op-checkoutbridge')
             ), 404);
         }
 
@@ -441,7 +447,7 @@ class OP_CB_REST_Controller {
                 'success' => false,
                 'valid'   => false,
                 'error'   => 'missing_coupon',
-                'message' => __('Coupon code is required.', 'checkoutbridge')
+                'message' => __('Coupon code is required.', 'op-checkoutbridge')
             ), 400);
         }
 
@@ -470,7 +476,7 @@ class OP_CB_REST_Controller {
             return new WP_REST_Response(array(
                 'success' => false,
                 'error'   => 'rate_limited',
-                'message' => __('Too many requests. Please try again shortly.', 'checkoutbridge')
+                'message' => __('Too many requests. Please try again shortly.', 'op-checkoutbridge')
             ), 429);
         }
 
@@ -478,36 +484,85 @@ class OP_CB_REST_Controller {
             'success' => true,
             'status'  => 'ok',
             'waf_shield' => 'active',
-            'message' => __('CheckoutBridge REST API is active and healthy.', 'checkoutbridge'),
+            'message' => __('CheckoutBridge REST API is active and healthy.', 'op-checkoutbridge'),
             'version' => OP_CB_VERSION
         ), 200);
     }
 
     /**
-     * Helper to extract & sanitize client IP address securely (Supports Cloudflare, LiteSpeed, Incapsula)
+     * Route Handler: POST /customer-lookup
      */
-    private static function get_client_ip() {
-        $ip_headers = array(
-            'HTTP_CF_CONNECTING_IP', // Cloudflare
-            'HTTP_INCAP_CLIENT_IP',  // Incapsula
-            'HTTP_X_REAL_IP',        // LiteSpeed / Nginx
-            'HTTP_X_FORWARDED_FOR',  // Standard Proxy
-            'REMOTE_ADDR'            // Standard Fallback
-        );
+    public static function customer_lookup_handler($request) {
+        $params = self::extract_request_params($request);
 
-        foreach ($ip_headers as $header) {
-            if (!empty($_SERVER[$header])) {
-                $ip = $_SERVER[$header];
-                if (strpos($ip, ',') !== false) {
-                    $parts = explode(',', $ip);
-                    $ip = trim($parts[0]);
-                }
-                if (filter_var($ip, FILTER_VALIDATE_IP)) {
-                    return sanitize_text_field($ip);
-                }
-            }
+        $client_ip = self::get_client_ip();
+        if (!OP_CB_Security::check_rate_limit('lookup_' . $client_ip, 20, 60)) {
+            return new WP_REST_Response(array(
+                'success' => false,
+                'found'   => false,
+                'error'   => 'rate_limited',
+                'message' => __('Rate limit exceeded for customer lookup. Please wait a moment.', 'op-checkoutbridge')
+            ), 429);
         }
 
-        return '0.0.0.0';
+        $token = !empty($params['bridge_token']) ? $params['bridge_token'] : (!empty($params['token']) ? $params['token'] : '');
+        if (empty($token)) {
+            return new WP_REST_Response(array(
+                'success' => false,
+                'found'   => false,
+                'error'   => 'missing_bridge_token',
+                'message' => __('bridge_token is required.', 'op-checkoutbridge')
+            ), 400);
+        }
+
+        $landing = OP_CB_Bridge_Repository::get_by_token($token);
+        if (!$landing) {
+            return new WP_REST_Response(array(
+                'success' => false,
+                'found'   => false,
+                'error'   => 'invalid_bridge_token',
+                'message' => __('Bridge campaign token is invalid.', 'op-checkoutbridge')
+            ), 404);
+        }
+
+        if ($landing['status'] !== 'active') {
+            return new WP_REST_Response(array(
+                'success' => false,
+                'found'   => false,
+                'error'   => 'landing_inactive',
+                'message' => __('Campaign is inactive.', 'op-checkoutbridge')
+            ), 403);
+        }
+
+        // Validate CORS origin
+        if (!OP_CB_Security::is_origin_allowed($landing['allowed_origins'])) {
+            return new WP_REST_Response(array(
+                'success' => false,
+                'found'   => false,
+                'error'   => 'origin_forbidden',
+                'message' => __('CORS origin forbidden.', 'op-checkoutbridge')
+            ), 403);
+        }
+
+        $phone = isset($params['phone']) ? $params['phone'] : '';
+        $result = OP_CB_Order_Engine::lookup_customer_by_phone($landing, $phone);
+
+        if (is_wp_error($result)) {
+            return new WP_REST_Response(array(
+                'success' => false,
+                'found'   => false,
+                'error'   => $result->get_error_code(),
+                'message' => $result->get_error_message()
+            ), 400);
+        }
+
+        return new WP_REST_Response($result, 200);
+    }
+
+    /**
+     * Helper to extract & sanitize client IP address securely
+     */
+    private static function get_client_ip() {
+        return OP_CB_Security::get_trusted_ip();
     }
 }

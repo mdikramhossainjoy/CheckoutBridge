@@ -3,7 +3,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-$site_rest_url = esc_url_raw(rest_url('checkoutbridge/v1/'));
+$op_cb_site_rest_url = esc_url_raw(rest_url('checkoutbridge/v1/'));
 ?>
 
 <div class="wrap op-cb-wrap" id="op_cb_docs">
@@ -15,8 +15,8 @@ $site_rest_url = esc_url_raw(rest_url('checkoutbridge/v1/'));
                 <i class="fa-solid fa-book-bookmark"></i>
             </div>
             <div>
-                <h1><?php esc_html_e('Developer Integration Guide', 'checkoutbridge'); ?></h1>
-                <p class="op-cb-subtitle"><?php esc_html_e('Complete REST API reference, payload examples, and integration workflows', 'checkoutbridge'); ?></p>
+                <h1><?php esc_html_e('Developer Integration Guide', 'op-checkoutbridge'); ?></h1>
+                <p class="op-cb-subtitle"><?php esc_html_e('Complete REST API reference, payload examples, and integration workflows', 'op-checkoutbridge'); ?></p>
             </div>
         </div>
     </div>
@@ -28,7 +28,7 @@ $site_rest_url = esc_url_raw(rest_url('checkoutbridge/v1/'));
             <div class="op-cb-card-header">
                 <h2>
                     <i class="fa-solid fa-bolt"></i>
-                    <?php esc_html_e('2-Step Developer Quickstart Flow', 'checkoutbridge'); ?>
+                    <?php esc_html_e('2-Step Developer Quickstart Flow', 'op-checkoutbridge'); ?>
                 </h2>
             </div>
             <div class="op-cb-card-body">
@@ -68,12 +68,12 @@ $site_rest_url = esc_url_raw(rest_url('checkoutbridge/v1/'));
             <div class="op-cb-card-header">
                 <h2>
                     <i class="fa-solid fa-shield-halved"></i>
-                    <?php esc_html_e('Architecture & Security Principles', 'checkoutbridge'); ?>
+                    <?php esc_html_e('Architecture & Security Principles', 'op-checkoutbridge'); ?>
                 </h2>
             </div>
             <div class="op-cb-card-body">
                 <p style="font-size:13.5px;color:var(--cb-text-500);margin:0 0 12px 0;line-height:1.65;">
-                    <?php esc_html_e('CheckoutBridge acts as a stateless, signed API bridge. All pricing, totals, and tax calculations happen exclusively on the WordPress server based on assigned WooCommerce products — developers never send price or total fields.', 'checkoutbridge'); ?>
+                    <?php esc_html_e('CheckoutBridge acts as a stateless, signed API bridge. All pricing, totals, and tax calculations happen exclusively on the WordPress server based on assigned WooCommerce products — developers never send price or total fields.', 'op-checkoutbridge'); ?>
                 </p>
                 <div class="op-cb-grid op-cb-grid-3">
 
@@ -83,11 +83,11 @@ $site_rest_url = esc_url_raw(rest_url('checkoutbridge/v1/'));
                             <div style="width: 2.25em; height: 2.25em; border-radius: var(--cb-r-sm); background: var(--cb-indigo-50); color: var(--cb-indigo-600); display: flex; align-items: center; justify-content: center;">
                                 <i class="fa-solid fa-lock" style="font-size: 1.1em;"></i>
                             </div>
-                            <span class="op-cb-badge op-cb-badge-primary"><?php esc_html_e('PRICE INTEGRITY', 'checkoutbridge'); ?></span>
+                            <span class="op-cb-badge op-cb-badge-primary"><?php esc_html_e('PRICE INTEGRITY', 'op-checkoutbridge'); ?></span>
                         </div>
-                        <h4 style="font-size: 0.875em; margin: 0; color: var(--cb-text-900); font-weight: 600; font-family: var(--cb-font-display);"><?php esc_html_e('Server-Side Resolution', 'checkoutbridge'); ?></h4>
+                        <h4 style="font-size: 0.875em; margin: 0; color: var(--cb-text-900); font-weight: 600; font-family: var(--cb-font-display);"><?php esc_html_e('Server-Side Resolution', 'op-checkoutbridge'); ?></h4>
                         <p style="font-size: 0.8125em; color: var(--cb-text-500); margin: 0; line-height: 1.5;">
-                            <?php esc_html_e('Product prices and order totals are always resolved directly from WooCommerce — payload price tampering is impossible.', 'checkoutbridge'); ?>
+                            <?php esc_html_e('Product prices and order totals are always resolved directly from WooCommerce — payload price tampering is impossible.', 'op-checkoutbridge'); ?>
                         </p>
                     </div>
 
@@ -97,11 +97,11 @@ $site_rest_url = esc_url_raw(rest_url('checkoutbridge/v1/'));
                             <div style="width: 2.25em; height: 2.25em; border-radius: var(--cb-r-sm); background: var(--cb-sky-50); color: var(--cb-sky-600); display: flex; align-items: center; justify-content: center;">
                                 <i class="fa-solid fa-truck-fast" style="font-size: 1.1em;"></i>
                             </div>
-                            <span class="op-cb-badge op-cb-badge-info"><?php esc_html_e('SHIPPING PAYLOAD', 'checkoutbridge'); ?></span>
+                            <span class="op-cb-badge op-cb-badge-info"><?php esc_html_e('SHIPPING PAYLOAD', 'op-checkoutbridge'); ?></span>
                         </div>
-                        <h4 style="font-size: 0.875em; margin: 0; color: var(--cb-text-900); font-weight: 600; font-family: var(--cb-font-display);"><?php esc_html_e('Shipping Payload Choice', 'checkoutbridge'); ?></h4>
+                        <h4 style="font-size: 0.875em; margin: 0; color: var(--cb-text-900); font-weight: 600; font-family: var(--cb-font-display);"><?php esc_html_e('Shipping Payload Choice', 'op-checkoutbridge'); ?></h4>
                         <p style="font-size: 0.8125em; color: var(--cb-text-500); margin: 0; line-height: 1.5;">
-                            <?php esc_html_e('Developers pass shipping choice ID (e.g. inside_dhaka, outside_dhaka, free_shipping) with cost included in payload.', 'checkoutbridge'); ?>
+                            <?php esc_html_e('Developers pass shipping choice ID (e.g. inside_dhaka, outside_dhaka, free_shipping) with cost included in payload.', 'op-checkoutbridge'); ?>
                         </p>
                     </div>
 
@@ -111,11 +111,11 @@ $site_rest_url = esc_url_raw(rest_url('checkoutbridge/v1/'));
                             <div style="width: 2.25em; height: 2.25em; border-radius: var(--cb-r-sm); background: var(--cb-green-50); color: var(--cb-green-500); display: flex; align-items: center; justify-content: center;">
                                 <i class="fa-solid fa-file-signature" style="font-size: 1.1em;"></i>
                             </div>
-                            <span class="op-cb-badge op-cb-badge-success"><?php esc_html_e('HMAC SHA-256', 'checkoutbridge'); ?></span>
+                            <span class="op-cb-badge op-cb-badge-success"><?php esc_html_e('HMAC SHA-256', 'op-checkoutbridge'); ?></span>
                         </div>
-                        <h4 style="font-size: 0.875em; margin: 0; color: var(--cb-text-900); font-weight: 600; font-family: var(--cb-font-display);"><?php esc_html_e('Signed Redirect Tokens', 'checkoutbridge'); ?></h4>
+                        <h4 style="font-size: 0.875em; margin: 0; color: var(--cb-text-900); font-weight: 600; font-family: var(--cb-font-display);"><?php esc_html_e('Signed Redirect Tokens', 'op-checkoutbridge'); ?></h4>
                         <p style="font-size: 0.8125em; color: var(--cb-text-500); margin: 0; line-height: 1.5;">
-                            <?php esc_html_e('Thank-you page redirect tokens are cryptographically signed using HMAC-SHA256 signatures and expire automatically.', 'checkoutbridge'); ?>
+                            <?php esc_html_e('Thank-you page redirect tokens are cryptographically signed using HMAC-SHA256 signatures and expire automatically.', 'op-checkoutbridge'); ?>
                         </p>
                     </div>
 
@@ -128,7 +128,7 @@ $site_rest_url = esc_url_raw(rest_url('checkoutbridge/v1/'));
             <div class="op-cb-card-header">
                 <h2>
                     <i class="fa-solid fa-code"></i>
-                    <?php esc_html_e('Endpoint 1: Create Order', 'checkoutbridge'); ?>
+                    <?php esc_html_e('Endpoint 1: Create Order', 'op-checkoutbridge'); ?>
                 </h2>
                 <span class="op-cb-badge op-cb-badge-success">POST</span>
             </div>
@@ -140,13 +140,13 @@ $site_rest_url = esc_url_raw(rest_url('checkoutbridge/v1/'));
                         <code>/wp-json/checkoutbridge/v1/create-order</code>
                     </h3>
                     <p class="op-cb-endpoint-desc">
-                        <?php esc_html_e('Creates a Cash on Delivery WooCommerce order from a custom landing page. Returns a signed redirect token for the thank-you page.', 'checkoutbridge'); ?>
+                        <?php esc_html_e('Creates a Cash on Delivery WooCommerce order from a custom landing page. Returns a signed redirect token for the thank-you page.', 'op-checkoutbridge'); ?>
                     </p>
 
                     <div class="op-cb-base-url-chip">
-                        <span><?php esc_html_e('Base URL:', 'checkoutbridge'); ?></span>
-                        <code><?php echo esc_html($site_rest_url); ?>create-order</code>
-                        <button type="button" class="op-cb-btn-icon op-cb-btn-copy" data-clipboard="<?php echo esc_attr($site_rest_url . 'create-order'); ?>">
+                        <span><?php esc_html_e('Base URL:', 'op-checkoutbridge'); ?></span>
+                        <code><?php echo esc_html($op_cb_site_rest_url); ?>create-order</code>
+                        <button type="button" class="op-cb-btn-icon op-cb-btn-copy" data-clipboard="<?php echo esc_attr($op_cb_site_rest_url . 'create-order'); ?>">
                             <i class="fa-solid fa-copy"></i>
                         </button>
                     </div>
@@ -156,7 +156,7 @@ $site_rest_url = esc_url_raw(rest_url('checkoutbridge/v1/'));
                             <i class="fa-solid fa-list-check"></i>
                         </div>
                         <div class="op-cb-callout-content">
-                            <h4><?php esc_html_e('Mandatory Items Payload Specification', 'checkoutbridge'); ?></h4>
+                            <h4><?php esc_html_e('Mandatory Items Payload Specification', 'op-checkoutbridge'); ?></h4>
                             <p style="font-size:12.5px;color:var(--cb-text-700);margin:4px 0 0 0;line-height:1.55;">
                                 <strong>Required Field:</strong> All order requests <em>must</em> include the <code>items</code> array (e.g. <code>items: [{id: 14, quantity: 2}, {id: 20, quantity: 1}]</code>). Each item ID is strictly validated against the campaign's assigned WooCommerce products.
                             </p>
@@ -178,18 +178,18 @@ $site_rest_url = esc_url_raw(rest_url('checkoutbridge/v1/'));
                             </div>
                             <button type="button" class="op-cb-btn-copy-code" data-target="code_create_active">
                                 <i class="fa-solid fa-copy" style="margin-right:0.125em;"></i>
-                                <?php esc_html_e('Copy', 'checkoutbridge'); ?>
+                                <?php esc_html_e('Copy', 'op-checkoutbridge'); ?>
                             </button>
                         </div>
 
                         <!-- JS Fetch -->
                         <div id="tab_js_create" class="op-cb-code-tab-content">
                             <pre class="op-cb-code-block"><code>async function submitOrder(formData) {
-  const res = await fetch('<?php echo esc_js($site_rest_url . 'create-order'); ?>', {
+  const res = await fetch('<?php echo esc_js($op_cb_site_rest_url . 'create-order'); ?>', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      landing_token: 'op_cb_YOUR_BRIDGE_TOKEN',
+      bridge_token: 'op_cb_YOUR_BRIDGE_TOKEN',
       items: [
         { id: 14, quantity: 2 },
         { id: 20, quantity: 1 }
@@ -220,7 +220,7 @@ $site_rest_url = esc_url_raw(rest_url('checkoutbridge/v1/'));
                         <div id="tab_php_create" class="op-cb-code-tab-content op-cb-hidden">
                             <pre class="op-cb-code-block"><code>&lt;?php
 $payload = [
-    'landing_token' => 'op_cb_YOUR_BRIDGE_TOKEN',
+    'bridge_token' => 'op_cb_YOUR_BRIDGE_TOKEN',
     'items' => [
         ['id' => 14, 'quantity' => 2],
         ['id' => 20, 'quantity' => 1],
@@ -237,7 +237,7 @@ $payload = [
     ],
 ];
 
-$ch = curl_init('<?php echo esc_js($site_rest_url . 'create-order'); ?>');
+$ch = curl_init('<?php echo esc_js($op_cb_site_rest_url . 'create-order'); ?>');
 curl_setopt_array($ch, [
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_POST           => true,
@@ -259,11 +259,11 @@ if ($data['success'] ?? false) {
                         <div id="tab_react_create" class="op-cb-code-tab-content op-cb-hidden">
                             <pre class="op-cb-code-block"><code>// React / Next.js (App Router or Pages Router)
 export async function submitLandingOrder(formData) {
-  const response = await fetch('<?php echo esc_js($site_rest_url . 'create-order'); ?>', {
+  const response = await fetch('<?php echo esc_js($op_cb_site_rest_url . 'create-order'); ?>', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      landing_token: process.env.NEXT_PUBLIC_BRIDGE_TOKEN,
+      bridge_token: process.env.NEXT_PUBLIC_BRIDGE_TOKEN,
       items: formData.selectedItems, // [{ id: 14, quantity: 2 }, { id: 20, quantity: 1 }]
       customer: {
         full_name: formData.name,
@@ -290,9 +290,9 @@ export async function submitLandingOrder(formData) {
                             <pre class="op-cb-code-block"><code>import requests
 
 response = requests.post(
-    '<?php echo esc_js($site_rest_url . 'create-order'); ?>',
+    '<?php echo esc_js($op_cb_site_rest_url . 'create-order'); ?>',
     json={
-        'landing_token': 'op_cb_YOUR_BRIDGE_TOKEN',
+        'bridge_token': 'op_cb_YOUR_BRIDGE_TOKEN',
         'items': [
             {'id': 14, 'quantity': 2},
             {'id': 20, 'quantity': 1}
@@ -322,8 +322,8 @@ if data.get('success'):
 const axios = require('axios');
 
 async function createBridgeOrder(orderPayload) {
-  const { data } = await axios.post('<?php echo esc_js($site_rest_url . 'create-order'); ?>', {
-    landing_token: 'op_cb_YOUR_BRIDGE_TOKEN',
+  const { data } = await axios.post('<?php echo esc_js($op_cb_site_rest_url . 'create-order'); ?>', {
+    bridge_token: 'op_cb_YOUR_BRIDGE_TOKEN',
     items: [
       { id: 14, quantity: 2 },
       { id: 20, quantity: 1 }
@@ -357,7 +357,7 @@ import (
 
 func main() {
     payload := map[string]interface{}{
-        "landing_token": "op_cb_YOUR_BRIDGE_TOKEN",
+        "bridge_token": "op_cb_YOUR_BRIDGE_TOKEN",
         "items": []map[string]int{
             {"id": 14, "quantity": 2},
             {"id": 20, "quantity": 1},
@@ -375,7 +375,7 @@ func main() {
     }
 
     body, _ := json.Marshal(payload)
-    resp, err := http.Post("<?php echo esc_js($site_rest_url . 'create-order'); ?>", "application/json", bytes.NewBuffer(body))
+    resp, err := http.Post("<?php echo esc_js($op_cb_site_rest_url . 'create-order'); ?>", "application/json", bytes.NewBuffer(body))
     if err != nil {
         panic(err)
     }
@@ -393,12 +393,12 @@ func main() {
 require 'json'
 require 'uri'
 
-uri = URI("<?php echo esc_js($site_rest_url . 'create-order'); ?>")
+uri = URI("<?php echo esc_js($op_cb_site_rest_url . 'create-order'); ?>")
 http = Net::HTTP.new(uri.host, uri.port)
 request = Net::HTTP::Post.new(uri.path, {'Content-Type' => 'application/json'})
 
 request.body = {
-  landing_token: 'op_cb_YOUR_BRIDGE_TOKEN',
+  bridge_token: 'op_cb_YOUR_BRIDGE_TOKEN',
   items: [{ id: 14, quantity: 2 }, { id: 20, quantity: 1 }],
   customer: { full_name: 'John Doe', phone: '01700000000', address: 'Dhaka' },
   shipping: { id: 'inside_dhaka', label: 'Inside Dhaka', cost: 80 }
@@ -410,10 +410,10 @@ puts response.body</code></pre>
 
                         <!-- cURL CLI -->
                         <div id="tab_curl_create" class="op-cb-code-tab-content op-cb-hidden">
-                            <pre class="op-cb-code-block"><code>curl -X POST "<?php echo esc_js($site_rest_url . 'create-order'); ?>" \
+                            <pre class="op-cb-code-block"><code>curl -X POST "<?php echo esc_js($op_cb_site_rest_url . 'create-order'); ?>" \
   -H "Content-Type: application/json" \
   -d '{
-    "landing_token": "op_cb_YOUR_BRIDGE_TOKEN",
+    "bridge_token": "op_cb_YOUR_BRIDGE_TOKEN",
     "items": [
       { "id": 14, "quantity": 2 },
       { "id": 20, "quantity": 1 }
@@ -440,7 +440,7 @@ puts response.body</code></pre>
             <div class="op-cb-card-header">
                 <h2>
                     <i class="fa-solid fa-receipt"></i>
-                    <?php esc_html_e('Endpoint 2: Order Details & Receipt', 'checkoutbridge'); ?>
+                    <?php esc_html_e('Endpoint 2: Order Details & Receipt', 'op-checkoutbridge'); ?>
                 </h2>
                 <span class="op-cb-badge op-cb-badge-primary">POST</span>
             </div>
@@ -452,7 +452,7 @@ puts response.body</code></pre>
                         <code>/wp-json/checkoutbridge/v1/order-details</code>
                     </h3>
                     <p class="op-cb-endpoint-desc">
-                        <?php esc_html_e('Validates the signed redirect token and returns order, customer, and line item details for rendering on the thank-you page.', 'checkoutbridge'); ?>
+                        <?php esc_html_e('Validates the signed redirect token and returns order, customer, and line item details for rendering on the thank-you page.', 'op-checkoutbridge'); ?>
                     </p>
 
                     <div class="op-cb-code-wrapper">
@@ -469,7 +469,7 @@ puts response.body</code></pre>
                             </div>
                             <button type="button" class="op-cb-btn-copy-code" data-target="code_details_active">
                                 <i class="fa-solid fa-copy" style="margin-right:0.125em;"></i>
-                                <?php esc_html_e('Copy', 'checkoutbridge'); ?>
+                                <?php esc_html_e('Copy', 'op-checkoutbridge'); ?>
                             </button>
                         </div>
 
@@ -477,7 +477,7 @@ puts response.body</code></pre>
                         <div id="tab_js_details" class="op-cb-code-tab-content">
                             <pre class="op-cb-code-block"><code>// Fetch order details on Thank-You page using signed redirect token
 async function fetchOrderReceipt(token) {
-  const res = await fetch('<?php echo esc_js($site_rest_url . 'order-details'); ?>', {
+  const res = await fetch('<?php echo esc_js($op_cb_site_rest_url . 'order-details'); ?>', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ token: token })
@@ -495,7 +495,7 @@ async function fetchOrderReceipt(token) {
 $token   = $_GET['token'] ?? '';
 $payload = json_encode(['token' => $token]);
 
-$ch = curl_init('<?php echo esc_js($site_rest_url . 'order-details'); ?>');
+$ch = curl_init('<?php echo esc_js($op_cb_site_rest_url . 'order-details'); ?>');
 curl_setopt_array($ch, [
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_POST           => true,
@@ -516,7 +516,7 @@ export default function ThankYouReceipt({ token }) {
 
   useEffect(() => {
     async function fetchReceipt() {
-      const res = await fetch('<?php echo esc_js($site_rest_url . 'order-details'); ?>', {
+      const res = await fetch('<?php echo esc_js($op_cb_site_rest_url . 'order-details'); ?>', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token: token })
@@ -537,7 +537,7 @@ export default function ThankYouReceipt({ token }) {
 
 token = 'SIGNED_THANK_YOU_TOKEN'
 response = requests.post(
-    '<?php echo esc_js($site_rest_url . 'order-details'); ?>',
+    '<?php echo esc_js($op_cb_site_rest_url . 'order-details'); ?>',
     json={'token': token}
 )
 
@@ -549,7 +549,7 @@ order_data = response.json()</code></pre>
                             <pre class="op-cb-code-block"><code>const axios = require('axios');
 
 async function getOrderDetails(token) {
-  const { data } = await axios.post('<?php echo esc_js($site_rest_url . 'order-details'); ?>', {
+  const { data } = await axios.post('<?php echo esc_js($op_cb_site_rest_url . 'order-details'); ?>', {
     token: token
   });
   return data;
@@ -569,7 +569,7 @@ import (
 
 func main() {
     body, _ := json.Marshal(map[string]string{"token": "SIGNED_THANK_YOU_TOKEN"})
-    resp, err := http.Post("<?php echo esc_js($site_rest_url . 'order-details'); ?>", "application/json", bytes.NewBuffer(body))
+    resp, err := http.Post("<?php echo esc_js($op_cb_site_rest_url . 'order-details'); ?>", "application/json", bytes.NewBuffer(body))
     if err != nil {
         panic(err)
     }
@@ -587,14 +587,14 @@ func main() {
 require 'json'
 require 'uri'
 
-uri = URI("<?php echo esc_js($site_rest_url . 'order-details'); ?>")
+uri = URI("<?php echo esc_js($op_cb_site_rest_url . 'order-details'); ?>")
 response = Net::HTTP.post(uri, { token: 'SIGNED_THANK_YOU_TOKEN' }.to_json, "Content-Type" => "application/json")
 puts response.body</code></pre>
                         </div>
 
                         <!-- cURL -->
                         <div id="tab_curl_details" class="op-cb-code-tab-content op-cb-hidden">
-                            <pre class="op-cb-code-block"><code>curl -X POST "<?php echo esc_js($site_rest_url . 'order-details'); ?>" \
+                            <pre class="op-cb-code-block"><code>curl -X POST "<?php echo esc_js($op_cb_site_rest_url . 'order-details'); ?>" \
   -H "Content-Type: application/json" \
   -d '{"token": "SIGNED_THANK_YOU_TOKEN"}'</code></pre>
                         </div>
@@ -603,10 +603,10 @@ puts response.body</code></pre>
                     <!-- Response JSON Block -->
                     <div class="op-cb-code-wrapper op-cb-mt-3">
                         <div class="op-cb-code-header">
-                            <span class="op-cb-code-lang-chip"><?php esc_html_e('JSON — Success Response (200 OK)', 'checkoutbridge'); ?></span>
+                            <span class="op-cb-code-lang-chip"><?php esc_html_e('JSON — Success Response (200 OK)', 'op-checkoutbridge'); ?></span>
                             <button type="button" class="op-cb-btn-copy-code" data-target="code_order_details">
                                 <i class="fa-solid fa-copy" style="margin-right:0.125em;"></i>
-                                <?php esc_html_e('Copy JSON', 'checkoutbridge'); ?>
+                                <?php esc_html_e('Copy JSON', 'op-checkoutbridge'); ?>
                             </button>
                         </div>
                         <pre class="op-cb-code-block"><code id="code_order_details">{
@@ -660,7 +660,7 @@ puts response.body</code></pre>
             <div class="op-cb-card-header">
                 <h2>
                     <i class="fa-solid fa-ticket"></i>
-                    <?php esc_html_e('Endpoint 3: Validate Coupon / Promo Code', 'checkoutbridge'); ?>
+                    <?php esc_html_e('Endpoint 3: Validate Coupon / Promo Code', 'op-checkoutbridge'); ?>
                 </h2>
                 <span class="op-cb-badge op-cb-badge-success">POST</span>
             </div>
@@ -672,13 +672,13 @@ puts response.body</code></pre>
                         <code>/wp-json/checkoutbridge/v1/validate-coupon</code>
                     </h3>
                     <p class="op-cb-endpoint-desc">
-                        <?php esc_html_e('Validates a WooCommerce promo coupon code in real-time and returns the calculated discount amount, new subtotal, and total before order submission.', 'checkoutbridge'); ?>
+                        <?php esc_html_e('Validates a WooCommerce promo coupon code in real-time and returns the calculated discount amount, new subtotal, and total before order submission.', 'op-checkoutbridge'); ?>
                     </p>
 
                     <div class="op-cb-base-url-chip">
-                        <span><?php esc_html_e('Base URL:', 'checkoutbridge'); ?></span>
-                        <code><?php echo esc_html($site_rest_url); ?>validate-coupon</code>
-                        <button type="button" class="op-cb-btn-icon op-cb-btn-copy" data-clipboard="<?php echo esc_attr($site_rest_url . 'validate-coupon'); ?>">
+                        <span><?php esc_html_e('Base URL:', 'op-checkoutbridge'); ?></span>
+                        <code><?php echo esc_html($op_cb_site_rest_url); ?>validate-coupon</code>
+                        <button type="button" class="op-cb-btn-icon op-cb-btn-copy" data-clipboard="<?php echo esc_attr($op_cb_site_rest_url . 'validate-coupon'); ?>">
                             <i class="fa-solid fa-copy"></i>
                         </button>
                     </div>
@@ -698,18 +698,18 @@ puts response.body</code></pre>
                             </div>
                             <button type="button" class="op-cb-btn-copy-code" data-target="code_coupon_active">
                                 <i class="fa-solid fa-copy" style="margin-right:0.125em;"></i>
-                                <?php esc_html_e('Copy', 'checkoutbridge'); ?>
+                                <?php esc_html_e('Copy', 'op-checkoutbridge'); ?>
                             </button>
                         </div>
 
                         <!-- JS Fetch -->
                         <div id="tab_js_coupon" class="op-cb-code-tab-content">
                             <pre class="op-cb-code-block"><code>async function validateCoupon(code, items, shippingCost) {
-  const res = await fetch('<?php echo esc_js($site_rest_url . 'validate-coupon'); ?>', {
+  const res = await fetch('<?php echo esc_js($op_cb_site_rest_url . 'validate-coupon'); ?>', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      landing_token: 'op_cb_YOUR_BRIDGE_TOKEN',
+      bridge_token: 'op_cb_YOUR_BRIDGE_TOKEN',
       coupon_code: code,
       items: items, // [{ id: 14, quantity: 2 }]
       shipping_cost: shippingCost
@@ -726,13 +726,13 @@ puts response.body</code></pre>
                         <div id="tab_php_coupon" class="op-cb-code-tab-content op-cb-hidden">
                             <pre class="op-cb-code-block"><code>&lt;?php
 $payload = json_encode([
-    'landing_token' => 'op_cb_YOUR_BRIDGE_TOKEN',
+    'bridge_token' => 'op_cb_YOUR_BRIDGE_TOKEN',
     'coupon_code'   => 'FLASH50',
     'items'         => [['id' => 14, 'quantity' => 2]],
     'shipping_cost' => 60
 ]);
 
-$ch = curl_init('<?php echo esc_js($site_rest_url . 'validate-coupon'); ?>');
+$ch = curl_init('<?php echo esc_js($op_cb_site_rest_url . 'validate-coupon'); ?>');
 curl_setopt_array($ch, [
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_POST           => true,
@@ -752,11 +752,11 @@ export default function CouponValidator() {
   const [discount, setDiscount] = useState(0);
 
   const applyCoupon = async (code) => {
-    const res = await fetch('<?php echo esc_js($site_rest_url . 'validate-coupon'); ?>', {
+    const res = await fetch('<?php echo esc_js($op_cb_site_rest_url . 'validate-coupon'); ?>', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        landing_token: 'op_cb_YOUR_BRIDGE_TOKEN',
+        bridge_token: 'op_cb_YOUR_BRIDGE_TOKEN',
         coupon_code: code,
         items: [{ id: 14, quantity: 2 }],
         shipping_cost: 60
@@ -777,14 +777,14 @@ export default function CouponValidator() {
                             <pre class="op-cb-code-block"><code>import requests
 
 payload = {
-    'landing_token': 'op_cb_YOUR_BRIDGE_TOKEN',
+    'bridge_token': 'op_cb_YOUR_BRIDGE_TOKEN',
     'coupon_code': 'FLASH50',
     'items': [{'id': 14, 'quantity': 2}],
     'shipping_cost': 60
 }
 
 response = requests.post(
-    '<?php echo esc_js($site_rest_url . 'validate-coupon'); ?>',
+    '<?php echo esc_js($op_cb_site_rest_url . 'validate-coupon'); ?>',
     json=payload
 )
 
@@ -798,8 +798,8 @@ if result.get('success'):
                             <pre class="op-cb-code-block"><code>const axios = require('axios');
 
 async function validateCoupon(code) {
-  const { data } = await axios.post('<?php echo esc_js($site_rest_url . 'validate-coupon'); ?>', {
-    landing_token: 'op_cb_YOUR_BRIDGE_TOKEN',
+  const { data } = await axios.post('<?php echo esc_js($op_cb_site_rest_url . 'validate-coupon'); ?>', {
+    bridge_token: 'op_cb_YOUR_BRIDGE_TOKEN',
     coupon_code: code,
     items: [{ id: 14, quantity: 2 }],
     shipping_cost: 60
@@ -821,13 +821,13 @@ import (
 
 func main() {
     payload := map[string]interface{}{
-        "landing_token": "op_cb_YOUR_BRIDGE_TOKEN",
+        "bridge_token": "op_cb_YOUR_BRIDGE_TOKEN",
         "coupon_code":   "FLASH50",
         "items":         []map[string]int{{"id": 14, "quantity": 2}},
         "shipping_cost": 60,
     }
     body, _ := json.Marshal(payload)
-    resp, err := http.Post("<?php echo esc_js($site_rest_url . 'validate-coupon'); ?>", "application/json", bytes.NewBuffer(body))
+    resp, err := http.Post("<?php echo esc_js($op_cb_site_rest_url . 'validate-coupon'); ?>", "application/json", bytes.NewBuffer(body))
     if err != nil {
         panic(err)
     }
@@ -845,9 +845,9 @@ func main() {
 require 'json'
 require 'uri'
 
-uri = URI.parse('<?php echo esc_js($site_rest_url . 'validate-coupon'); ?>')
+uri = URI.parse('<?php echo esc_js($op_cb_site_rest_url . 'validate-coupon'); ?>')
 payload = {
-  landing_token: 'op_cb_YOUR_BRIDGE_TOKEN',
+  bridge_token: 'op_cb_YOUR_BRIDGE_TOKEN',
   coupon_code: 'FLASH50',
   items: [{ id: 14, quantity: 2 }],
   shipping_cost: 60
@@ -863,10 +863,10 @@ puts response.body</code></pre>
 
                         <!-- cURL CLI -->
                         <div id="tab_curl_coupon" class="op-cb-code-tab-content op-cb-hidden">
-                            <pre class="op-cb-code-block"><code>curl -X POST "<?php echo esc_js($site_rest_url . 'validate-coupon'); ?>" \
+                            <pre class="op-cb-code-block"><code>curl -X POST "<?php echo esc_js($op_cb_site_rest_url . 'validate-coupon'); ?>" \
   -H "Content-Type: application/json" \
   -d '{
-    "landing_token": "op_cb_YOUR_BRIDGE_TOKEN",
+    "bridge_token": "op_cb_YOUR_BRIDGE_TOKEN",
     "coupon_code": "FLASH50",
     "items": [{"id": 14, "quantity": 2}],
     "shipping_cost": 60
@@ -877,10 +877,10 @@ puts response.body</code></pre>
                     <!-- Response Sample -->
                     <div class="op-cb-code-wrapper op-cb-mt-3">
                         <div class="op-cb-code-header">
-                            <span class="op-cb-code-lang-chip"><?php esc_html_e('JSON — Success Response (200 OK)', 'checkoutbridge'); ?></span>
+                            <span class="op-cb-code-lang-chip"><?php esc_html_e('JSON — Success Response (200 OK)', 'op-checkoutbridge'); ?></span>
                             <button type="button" class="op-cb-btn-copy-code" data-target="code_coupon_resp">
                                 <i class="fa-solid fa-copy" style="margin-right:0.125em;"></i>
-                                <?php esc_html_e('Copy JSON', 'checkoutbridge'); ?>
+                                <?php esc_html_e('Copy JSON', 'op-checkoutbridge'); ?>
                             </button>
                         </div>
                         <pre class="op-cb-code-block"><code id="code_coupon_resp">{
@@ -910,7 +910,7 @@ puts response.body</code></pre>
             <div class="op-cb-card-header">
                 <h2>
                     <i class="fa-solid fa-heart-pulse"></i>
-                    <?php esc_html_e('Endpoint 4: Integration Health Check', 'checkoutbridge'); ?>
+                    <?php esc_html_e('Endpoint 4: Integration Health Check', 'op-checkoutbridge'); ?>
                 </h2>
                 <span class="op-cb-badge op-cb-badge-info">GET</span>
             </div>
@@ -922,13 +922,13 @@ puts response.body</code></pre>
                         <code>/wp-json/checkoutbridge/v1/health</code>
                     </h3>
                     <p class="op-cb-endpoint-desc">
-                        <?php esc_html_e('Verifies that the CheckoutBridge REST API infrastructure is operational, active, and unblocked by server WAF rules.', 'checkoutbridge'); ?>
+                        <?php esc_html_e('Verifies that the CheckoutBridge REST API infrastructure is operational, active, and unblocked by server WAF rules.', 'op-checkoutbridge'); ?>
                     </p>
 
                     <div class="op-cb-base-url-chip">
-                        <span><?php esc_html_e('Base URL:', 'checkoutbridge'); ?></span>
-                        <code><?php echo esc_html($site_rest_url); ?>health</code>
-                        <button type="button" class="op-cb-btn-icon op-cb-btn-copy" data-clipboard="<?php echo esc_attr($site_rest_url . 'health'); ?>">
+                        <span><?php esc_html_e('Base URL:', 'op-checkoutbridge'); ?></span>
+                        <code><?php echo esc_html($op_cb_site_rest_url); ?>health</code>
+                        <button type="button" class="op-cb-btn-icon op-cb-btn-copy" data-clipboard="<?php echo esc_attr($op_cb_site_rest_url . 'health'); ?>">
                             <i class="fa-solid fa-copy"></i>
                         </button>
                     </div>
@@ -948,14 +948,14 @@ puts response.body</code></pre>
                             </div>
                             <button type="button" class="op-cb-btn-copy-code" data-target="code_health_active">
                                 <i class="fa-solid fa-copy" style="margin-right:0.125em;"></i>
-                                <?php esc_html_e('Copy', 'checkoutbridge'); ?>
+                                <?php esc_html_e('Copy', 'op-checkoutbridge'); ?>
                             </button>
                         </div>
 
                         <!-- JS Fetch -->
                         <div id="tab_js_health" class="op-cb-code-tab-content">
                             <pre class="op-cb-code-block"><code>async function checkHealth() {
-  const res = await fetch('<?php echo esc_js($site_rest_url . 'health'); ?>');
+  const res = await fetch('<?php echo esc_js($op_cb_site_rest_url . 'health'); ?>');
   const data = await res.json();
   if (data.status === 'ok') console.log("CheckoutBridge API Active v" + data.version);
 }</code></pre>
@@ -964,7 +964,7 @@ puts response.body</code></pre>
                         <!-- PHP cURL -->
                         <div id="tab_php_health" class="op-cb-code-tab-content op-cb-hidden">
                             <pre class="op-cb-code-block"><code>&lt;?php
-$res = file_get_contents('<?php echo esc_js($site_rest_url . 'health'); ?>');
+$res = file_get_contents('<?php echo esc_js($op_cb_site_rest_url . 'health'); ?>');
 $data = json_decode($res, true);
 if (($data['status'] ?? '') === 'ok') {
     echo "API Healthy v" . $data['version'];
@@ -979,7 +979,7 @@ export default function ApiHealthBadge() {
   const [healthy, setHealthy] = useState(false);
 
   useEffect(() => {
-    fetch('<?php echo esc_js($site_rest_url . 'health'); ?>')
+    fetch('<?php echo esc_js($op_cb_site_rest_url . 'health'); ?>')
       .then(res => res.json())
       .then(data => setHealthy(data.status === 'ok'));
   }, []);
@@ -992,7 +992,7 @@ export default function ApiHealthBadge() {
                         <div id="tab_python_health" class="op-cb-code-tab-content op-cb-hidden">
                             <pre class="op-cb-code-block"><code>import requests
 
-res = requests.get('<?php echo esc_js($site_rest_url . 'health'); ?>').json()
+res = requests.get('<?php echo esc_js($op_cb_site_rest_url . 'health'); ?>').json()
 if res.get('status') == 'ok':
     print("API Operational v" + res.get('version'))</code></pre>
                         </div>
@@ -1002,7 +1002,7 @@ if res.get('status') == 'ok':
                             <pre class="op-cb-code-block"><code>const axios = require('axios');
 
 async function checkHealth() {
-  const { data } = await axios.get('<?php echo esc_js($site_rest_url . 'health'); ?>');
+  const { data } = await axios.get('<?php echo esc_js($op_cb_site_rest_url . 'health'); ?>');
   return data.status === 'ok';
 }</code></pre>
                         </div>
@@ -1018,7 +1018,7 @@ import (
 )
 
 func main() {
-    resp, err := http.Get("<?php echo esc_js($site_rest_url . 'health'); ?>")
+    resp, err := http.Get("<?php echo esc_js($op_cb_site_rest_url . 'health'); ?>")
     if err != nil { panic(err) }
     defer resp.Body.Close()
 
@@ -1033,20 +1033,20 @@ func main() {
                             <pre class="op-cb-code-block"><code>require 'net/http'
 require 'json'
 
-res = Net::HTTP.get(URI('<?php echo esc_js($site_rest_url . 'health'); ?>'))
+res = Net::HTTP.get(URI('<?php echo esc_js($op_cb_site_rest_url . 'health'); ?>'))
 puts JSON.parse(res)</code></pre>
                         </div>
 
                         <!-- cURL CLI -->
                         <div id="tab_curl_health" class="op-cb-code-tab-content op-cb-hidden">
-                            <pre class="op-cb-code-block"><code>curl -X GET "<?php echo esc_js($site_rest_url . 'health'); ?>"</code></pre>
+                            <pre class="op-cb-code-block"><code>curl -X GET "<?php echo esc_js($op_cb_site_rest_url . 'health'); ?>"</code></pre>
                         </div>
                     </div>
 
                     <!-- Response Sample -->
                     <div class="op-cb-code-wrapper op-cb-mt-3">
                         <div class="op-cb-code-header">
-                            <span class="op-cb-code-lang-chip"><?php esc_html_e('JSON — Success Response (200 OK)', 'checkoutbridge'); ?></span>
+                            <span class="op-cb-code-lang-chip"><?php esc_html_e('JSON — Success Response (200 OK)', 'op-checkoutbridge'); ?></span>
                         </div>
                         <pre class="op-cb-code-block"><code>{
   "success": true,
@@ -1062,12 +1062,221 @@ puts JSON.parse(res)</code></pre>
             </div>
         </div>
 
+        <!-- ── Endpoint 5: Customer Phone Autofill Lookup ── -->
+        <div class="op-cb-card">
+            <div class="op-cb-card-header">
+                <h2>
+                    <i class="fa-solid fa-address-book"></i>
+                    <?php esc_html_e('Endpoint 5: Customer Phone Autofill Lookup', 'op-checkoutbridge'); ?>
+                </h2>
+                <span class="op-cb-badge op-cb-badge-success">POST</span>
+            </div>
+            <div class="op-cb-card-body">
+
+                <div class="op-cb-endpoint-block">
+                    <h3 class="op-cb-endpoint-title">
+                        <span class="op-cb-badge op-cb-badge-success">POST</span>
+                        <code>/wp-json/checkoutbridge/v1/customer-lookup</code>
+                    </h3>
+                    <p class="op-cb-endpoint-desc">
+                        <?php esc_html_e('Searches WooCommerce for existing customer records matching a phone number and returns name, address, and city for real-time 1-click form auto-filling.', 'op-checkoutbridge'); ?>
+                    </p>
+
+                    <div class="op-cb-base-url-chip">
+                        <span><?php esc_html_e('Base URL:', 'op-checkoutbridge'); ?></span>
+                        <code><?php echo esc_html($op_cb_site_rest_url); ?>customer-lookup</code>
+                        <button type="button" class="op-cb-btn-icon op-cb-btn-copy" data-clipboard="<?php echo esc_attr($op_cb_site_rest_url . 'customer-lookup'); ?>">
+                            <i class="fa-solid fa-copy"></i>
+                        </button>
+                    </div>
+
+                    <!-- Code Snippet Tabs -->
+                    <div class="op-cb-code-wrapper op-cb-mt-3">
+                        <div class="op-cb-code-header">
+                            <div class="op-cb-code-tabs">
+                                <button type="button" class="op-cb-tab-btn is-active" data-tab="tab_js_lookup">JS Fetch</button>
+                                <button type="button" class="op-cb-tab-btn" data-tab="tab_php_lookup">PHP cURL</button>
+                                <button type="button" class="op-cb-tab-btn" data-tab="tab_react_lookup">React / Next.js</button>
+                                <button type="button" class="op-cb-tab-btn" data-tab="tab_python_lookup">Python</button>
+                                <button type="button" class="op-cb-tab-btn" data-tab="tab_node_lookup">Node.js</button>
+                                <button type="button" class="op-cb-tab-btn" data-tab="tab_go_lookup">Go</button>
+                                <button type="button" class="op-cb-tab-btn" data-tab="tab_ruby_lookup">Ruby</button>
+                                <button type="button" class="op-cb-tab-btn" data-tab="tab_curl_lookup">cURL CLI</button>
+                            </div>
+                            <button type="button" class="op-cb-btn-copy-code" data-target="code_lookup_active">
+                                <i class="fa-solid fa-copy" style="margin-right:0.125em;"></i>
+                                <?php esc_html_e('Copy', 'op-checkoutbridge'); ?>
+                            </button>
+                        </div>
+
+                        <!-- JS Fetch -->
+                        <div id="tab_js_lookup" class="op-cb-code-tab-content">
+                            <pre class="op-cb-code-block"><code>async function lookupCustomer(phone) {
+  const res = await fetch('<?php echo esc_js($op_cb_site_rest_url . 'customer-lookup'); ?>', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      bridge_token: 'op_cb_your_token_here',
+      phone: phone
+    })
+  });
+  const data = await res.json();
+  if (data.found) {
+    document.getElementById('full_name').value = data.customer.full_name;
+    document.getElementById('address').value = data.customer.address;
+    document.getElementById('city').value = data.customer.city;
+  }
+}</code></pre>
+                        </div>
+
+                        <!-- PHP cURL -->
+                        <div id="tab_php_lookup" class="op-cb-code-tab-content op-cb-hidden">
+                            <pre class="op-cb-code-block"><code>&lt;?php
+$payload = json_encode([
+    'bridge_token' => 'op_cb_your_token_here',
+    'phone'        => '01711000000'
+]);
+
+$ch = curl_init('<?php echo esc_js($op_cb_site_rest_url . 'customer-lookup'); ?>');
+curl_setopt_array($ch, [
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_POST           => true,
+    CURLOPT_HTTPHEADER     => ['Content-Type: application/json'],
+    CURLOPT_POSTFIELDS     => $payload,
+]);
+
+$data = json_decode(curl_exec($ch), true);
+curl_close($ch);</code></pre>
+                        </div>
+
+                        <!-- React / Next.js -->
+                        <div id="tab_react_lookup" class="op-cb-code-tab-content op-cb-hidden">
+                            <pre class="op-cb-code-block"><code>const handlePhoneBlur = async (phone) => {
+  if (phone.length < 10) return;
+  const res = await fetch('<?php echo esc_js($op_cb_site_rest_url . 'customer-lookup'); ?>', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ bridge_token: 'op_cb_your_token_here', phone })
+  });
+  const data = await res.json();
+  if (data.found) {
+    setFormData(prev => ({
+      ...prev,
+      full_name: data.customer.full_name,
+      address: data.customer.address,
+      city: data.customer.city
+    }));
+  }
+};</code></pre>
+                        </div>
+
+                        <!-- Python -->
+                        <div id="tab_python_lookup" class="op-cb-code-tab-content op-cb-hidden">
+                            <pre class="op-cb-code-block"><code>import requests
+
+response = requests.post(
+    '<?php echo esc_js($op_cb_site_rest_url . 'customer-lookup'); ?>',
+    json={'bridge_token': 'op_cb_your_token_here', 'phone': '01711000000'}
+)
+print(response.json())</code></pre>
+                        </div>
+
+                        <!-- Node.js -->
+                        <div id="tab_node_lookup" class="op-cb-code-tab-content op-cb-hidden">
+                            <pre class="op-cb-code-block"><code>const axios = require('axios');
+
+async function lookupCustomer(phone) {
+  const { data } = await axios.post('<?php echo esc_js($op_cb_site_rest_url . 'customer-lookup'); ?>', {
+    bridge_token: 'op_cb_your_token_here',
+    phone: phone
+  });
+  return data;
+}</code></pre>
+                        </div>
+
+                        <!-- Go -->
+                        <div id="tab_go_lookup" class="op-cb-code-tab-content op-cb-hidden">
+                            <pre class="op-cb-code-block"><code>package main
+
+import (
+    "bytes"
+    "encoding/json"
+    "fmt"
+    "net/http"
+)
+
+func main() {
+    body, _ := json.Marshal(map[string]string{
+        "bridge_token": "op_cb_your_token_here",
+        "phone": "01711000000",
+    })
+    resp, err := http.Post("<?php echo esc_js($op_cb_site_rest_url . 'customer-lookup'); ?>", "application/json", bytes.NewBuffer(body))
+    if err != nil { panic(err) }
+    defer resp.Body.Close()
+
+    var result map[string]interface{}
+    json.NewDecoder(resp.Body).Decode(&result)
+    fmt.Println(result)
+}</code></pre>
+                        </div>
+
+                        <!-- Ruby -->
+                        <div id="tab_ruby_lookup" class="op-cb-code-tab-content op-cb-hidden">
+                            <pre class="op-cb-code-block"><code>require 'net/http'
+require 'json'
+
+uri = URI('<?php echo esc_js($op_cb_site_rest_url . 'customer-lookup'); ?>')
+req = Net::HTTP::Post.new(uri, 'Content-Type' => 'application/json')
+req.body = { bridge_token: 'op_cb_your_token_here', phone: '01711000000' }.to_json
+
+res = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == 'https') do |http|
+  http.request(req)
+end
+puts JSON.parse(res.body)</code></pre>
+                        </div>
+
+                        <!-- cURL CLI -->
+                        <div id="tab_curl_lookup" class="op-cb-code-tab-content op-cb-hidden">
+                            <pre class="op-cb-code-block"><code>curl -X POST "<?php echo esc_js($op_cb_site_rest_url . 'customer-lookup'); ?>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "bridge_token": "op_cb_your_token_here",
+    "phone": "01711000000"
+  }'</code></pre>
+                        </div>
+                    </div>
+
+                    <!-- Response Sample -->
+                    <div class="op-cb-code-wrapper op-cb-mt-3">
+                        <div class="op-cb-code-header">
+                            <span class="op-cb-code-lang-chip"><?php esc_html_e('JSON — Success Response (200 OK)', 'op-checkoutbridge'); ?></span>
+                        </div>
+                        <pre class="op-cb-code-block"><code>{
+  "success": true,
+  "found": true,
+  "customer": {
+    "full_name": "Tanvir Hassan",
+    "address": "House 45, Road 7, Mirpur 10",
+    "city": "Dhaka",
+    "email": "tanvir@example.com"
+  },
+  "stats": {
+    "total_orders": 3
+  }
+}</code></pre>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
         <!-- ── Error Reference ── -->
         <div class="op-cb-card">
             <div class="op-cb-card-header">
                 <h2>
                     <i class="fa-solid fa-triangle-exclamation"></i>
-                    <?php esc_html_e('REST API Error Reference', 'checkoutbridge'); ?>
+                    <?php esc_html_e('REST API Error Reference', 'op-checkoutbridge'); ?>
                 </h2>
             </div>
             <div class="op-cb-card-body op-cb-p-0">
@@ -1075,56 +1284,56 @@ puts JSON.parse(res)</code></pre>
                     <table class="op-cb-table">
                         <thead>
                             <tr>
-                                <th style="width:28%;text-align:start;"><?php esc_html_e('Error Code', 'checkoutbridge'); ?></th>
-                                <th style="width:14%;text-align:start;"><?php esc_html_e('HTTP', 'checkoutbridge'); ?></th>
-                                <th style="text-align:start;"><?php esc_html_e('Description & Resolution', 'checkoutbridge'); ?></th>
+                                <th style="width:28%;text-align:start;"><?php esc_html_e('Error Code', 'op-checkoutbridge'); ?></th>
+                                <th style="width:14%;text-align:start;"><?php esc_html_e('HTTP', 'op-checkoutbridge'); ?></th>
+                                <th style="text-align:start;"><?php esc_html_e('Description & Resolution', 'op-checkoutbridge'); ?></th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td><code>missing_landing_token</code></td>
+                                <td><code>missing_bridge_token</code></td>
                                 <td><span class="op-cb-badge op-cb-badge-warning">400</span></td>
-                                <td style="font-size:13px;"><?php esc_html_e('landing_token field is missing from the request payload.', 'checkoutbridge'); ?></td>
+                                <td style="font-size:13px;"><?php esc_html_e('bridge_token field is missing from the request payload.', 'op-checkoutbridge'); ?></td>
                             </tr>
                             <tr>
-                                <td><code>invalid_landing_token</code></td>
+                                <td><code>invalid_bridge_token</code></td>
                                 <td><span class="op-cb-badge op-cb-badge-warning">404</span></td>
-                                <td style="font-size:13px;"><?php esc_html_e('The token does not match any campaign in CheckoutBridge.', 'checkoutbridge'); ?></td>
+                                <td style="font-size:13px;"><?php esc_html_e('The token does not match any campaign in CheckoutBridge.', 'op-checkoutbridge'); ?></td>
                             </tr>
                             <tr>
                                 <td><code>landing_inactive</code></td>
                                 <td><span class="op-cb-badge op-cb-badge-danger">403</span></td>
-                                <td style="font-size:13px;"><?php esc_html_e('Campaign is set to Inactive in WordPress admin.', 'checkoutbridge'); ?></td>
+                                <td style="font-size:13px;"><?php esc_html_e('Campaign is set to Inactive in WordPress admin.', 'op-checkoutbridge'); ?></td>
                             </tr>
                             <tr>
                                 <td><code>origin_forbidden</code></td>
                                 <td><span class="op-cb-badge op-cb-badge-danger">403</span></td>
-                                <td style="font-size:13px;"><?php esc_html_e('Request origin is not in the campaign CORS whitelist.', 'checkoutbridge'); ?></td>
+                                <td style="font-size:13px;"><?php esc_html_e('Request origin is not in the campaign CORS whitelist.', 'op-checkoutbridge'); ?></td>
                             </tr>
                             <tr>
                                 <td><code>invalid_customer</code></td>
                                 <td><span class="op-cb-badge op-cb-badge-warning">400</span></td>
-                                <td style="font-size:13px;"><?php esc_html_e('One or more of full_name, phone, address fields are missing.', 'checkoutbridge'); ?></td>
+                                <td style="font-size:13px;"><?php esc_html_e('One or more of full_name, phone, address fields are missing.', 'op-checkoutbridge'); ?></td>
                             </tr>
                             <tr>
                                 <td><code>invalid_coupon</code></td>
                                 <td><span class="op-cb-badge op-cb-badge-warning">400</span></td>
-                                <td style="font-size:13px;"><?php esc_html_e('The coupon code provided is invalid, expired, or does not exist.', 'checkoutbridge'); ?></td>
+                                <td style="font-size:13px;"><?php esc_html_e('The coupon code provided is invalid, expired, or does not exist.', 'op-checkoutbridge'); ?></td>
                             </tr>
                             <tr>
                                 <td><code>invalid_token</code></td>
                                 <td><span class="op-cb-badge op-cb-badge-danger">401</span></td>
-                                <td style="font-size:13px;"><?php esc_html_e('Redirect token signature invalid or expired.', 'checkoutbridge'); ?></td>
+                                <td style="font-size:13px;"><?php esc_html_e('Redirect token signature invalid or expired.', 'op-checkoutbridge'); ?></td>
                             </tr>
                             <tr>
                                 <td><code>rate_limited</code></td>
                                 <td><span class="op-cb-badge op-cb-badge-danger">429</span></td>
-                                <td style="font-size:13px;"><?php esc_html_e('Too many requests from this IP. Retry after the rate limit window.', 'checkoutbridge'); ?></td>
+                                <td style="font-size:13px;"><?php esc_html_e('Too many requests from this IP. Retry after the rate limit window.', 'op-checkoutbridge'); ?></td>
                             </tr>
                             <tr>
                                 <td><code>internal_error</code></td>
                                 <td><span class="op-cb-badge op-cb-badge-dark">500</span></td>
-                                <td style="font-size:13px;"><?php esc_html_e('Unexpected server error. Check WordPress debug log for details.', 'checkoutbridge'); ?></td>
+                                <td style="font-size:13px;"><?php esc_html_e('Unexpected server error. Check WordPress debug log for details.', 'op-checkoutbridge'); ?></td>
                             </tr>
                         </tbody>
                     </table>
@@ -1137,12 +1346,12 @@ puts JSON.parse(res)</code></pre>
             <div class="op-cb-card-header">
                 <h2>
                     <i class="fa-solid fa-shield-cat"></i>
-                    <?php esc_html_e('Shared Hosting & Imunify360 WAF Compatibility Shield', 'checkoutbridge'); ?>
+                    <?php esc_html_e('Shared Hosting & Imunify360 WAF Compatibility Shield', 'op-checkoutbridge'); ?>
                 </h2>
             </div>
             <div class="op-cb-card-body">
                 <p style="font-size:13.5px;color:var(--cb-text-500);margin:0 0 16px 0;line-height:1.65;">
-                    <?php esc_html_e('Shared hosting platforms (cPanel, Plesk, LiteSpeed, Apache) often run Imunify360 or ModSecurity Web Application Firewalls (WAF) that may block cross-origin REST API calls or JSON POST payloads. CheckoutBridge includes a built-in 5-layer WAF compatibility shield to ensure 100% order delivery success.', 'checkoutbridge'); ?>
+                    <?php esc_html_e('Shared hosting platforms (cPanel, Plesk, LiteSpeed, Apache) often run Imunify360 or ModSecurity Web Application Firewalls (WAF) that may block cross-origin REST API calls or JSON POST payloads. CheckoutBridge includes a built-in 5-layer WAF compatibility shield to ensure 100% order delivery success.', 'op-checkoutbridge'); ?>
                 </p>
 
                 <div class="op-cb-grid op-cb-grid-3">
@@ -1194,12 +1403,12 @@ puts JSON.parse(res)</code></pre>
             <div class="op-cb-card-header">
                 <h2>
                     <i class="fa-brands fa-facebook" style="color:#1877f2;"></i>
-                    <?php esc_html_e('Meta (Facebook) Conversion CAPI (Server-Side Tracking) Helper', 'checkoutbridge'); ?>
+                    <?php esc_html_e('Meta (Facebook) Conversion CAPI (Server-Side Tracking) Helper', 'op-checkoutbridge'); ?>
                 </h2>
             </div>
             <div class="op-cb-card-body">
                 <p style="font-size:13.5px;color:var(--cb-text-500);margin:0 0 16px 0;line-height:1.65;">
-                    <?php esc_html_e('Bypass iOS 14+ ad blockers and achieve 100% Facebook Event Match Quality (EMQ) by sending Meta Server-Side Conversions API tokens directly with your CheckoutBridge order creation payload.', 'checkoutbridge'); ?>
+                    <?php esc_html_e('Bypass iOS 14+ ad blockers and achieve 100% Facebook Event Match Quality (EMQ) by sending Meta Server-Side Conversions API tokens directly with your CheckoutBridge order creation payload.', 'op-checkoutbridge'); ?>
                 </p>
 
                 <div class="op-cb-callout" style="margin-bottom:16px;">
@@ -1222,7 +1431,7 @@ const metaEventId = 'cb_evt_' + Date.now() + '_' + Math.random().toString(36).su
 
 // Construct API payload with Meta CAPI tokens
 const orderPayload = {
-  landing_token: "op_cb_your_token_here",
+  bridge_token: "op_cb_your_token_here",
   customer: {
     full_name: "Customer Name",
     phone: "01711000000",
@@ -1247,7 +1456,7 @@ const orderPayload = {
                     <div style="padding: 1em; background: var(--cb-surface-2); border: 1px solid var(--cb-border); border-radius: var(--cb-r-md);">
                         <h4 style="font-size:0.875em;margin:0 0 0.375em 0;color:var(--cb-text-900);font-weight:600;">Server Action Hook</h4>
                         <p style="font-size:0.8125em;color:var(--cb-text-500);margin:0;line-height:1.5;">
-                            Fires <code>checkoutbridge_order_created_meta_capi</code> on every order for instant server-side dispatch to Meta Graph CAPI endpoints.
+                            Fires <code>op_cb_order_created_meta_capi</code> on every order for instant server-side dispatch to Meta Graph CAPI endpoints.
                         </p>
                     </div>
                 </div>
@@ -1260,12 +1469,12 @@ const orderPayload = {
             <div class="op-cb-card-header">
                 <h2>
                     <i class="fa-solid fa-shield-halved" style="color:var(--cb-indigo-600);"></i>
-                    <?php esc_html_e('Global Dual-Shield Anti-Bot & Order Velocity Protection', 'checkoutbridge'); ?>
+                    <?php esc_html_e('Global Dual-Shield Anti-Bot & Order Velocity Protection', 'op-checkoutbridge'); ?>
                 </h2>
             </div>
             <div class="op-cb-card-body">
                 <p style="font-size:13.5px;color:var(--cb-text-500);margin:0 0 16px 0;line-height:1.65;">
-                    <?php esc_html_e('Prevent competitors, proxy scrapers, and malicious automated bots from placing fake COD orders using E.164 International Phone Number and Client IP velocity limits.', 'checkoutbridge'); ?>
+                    <?php esc_html_e('Prevent competitors, proxy scrapers, and malicious automated bots from placing fake COD orders using E.164 International Phone Number and Client IP velocity limits.', 'op-checkoutbridge'); ?>
                 </p>
 
                 <div class="op-cb-grid op-cb-grid-2">

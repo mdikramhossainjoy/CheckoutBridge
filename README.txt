@@ -1,11 +1,12 @@
 === CheckoutBridge ===
 Contributors: checkoutbridge
-Tags: woocommerce, landing page, checkout, cod, api, headless
+Tags: woocommerce, checkout, cod, api, headless
 Requires at least: 5.8
-Tested up to: 6.6
+Tested up to: 7.1
 Requires PHP: 7.4
+Requires Plugins: woocommerce
 WC requires at least: 5.0
-WC tested up to: 9.0
+WC tested up to: 9.3
 Stable tag: 1.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -23,6 +24,7 @@ It maintains WooCommerce as the single source of truth for product pricing, inve
 * **Single Source of Truth**: Product pricing, inventory deduction, and order creation logic executed securely on WooCommerce.
 * **Multi-Product Payload Ingestion**: Supports single or multi-product item selection with custom order quantities per line item.
 * **Real-Time Dynamic Coupon Validator**: Dedicated `/validate-coupon` REST endpoint for real-time promo code validation and discount calculation.
+* **Smart Customer Phone Autofill Lookup**: Dedicated `/customer-lookup` REST endpoint to search WooCommerce past orders by phone number and return buyer details for 1-click form auto-filling.
 * **Meta (Facebook) Conversion CAPI**: Native High-Performance Order Storage (HPOS) metadata (`_op_cb_fbp`, `_op_cb_fbc`, `_op_cb_event_id`) and server-side tracking action hook.
 * **Global Dual-Shield Anti-Bot Engine**: E.164 international phone number normalization and Client IP velocity rate limiting to eliminate spam orders.
 * **Stateless Signed Redirect Tokens**: Secure HMAC SHA-256 tokens for tamper-proof thank-you page receipt rendering.
@@ -49,5 +51,6 @@ Yes! CheckoutBridge is fully compatible with WooCommerce HPOS native storage.
 = 1.0.0 =
 * Initial official release of CheckoutBridge.
 * Real-time coupon validator endpoint (`/validate-coupon`).
+* Smart Customer Phone Autofill Lookup REST endpoint (`POST /customer-lookup`).
 * Meta CAPI server-side conversion tracking helper.
 * Global Dual-Shield Anti-Bot velocity limits.

@@ -14,7 +14,7 @@ class OP_CB_Order_Engine {
      */
     public static function create_order($landing, $customer_data, $shipping_data, $raw_params = array()) {
         if (!class_exists('WooCommerce')) {
-            return new WP_Error('wc_missing', __('WooCommerce plugin is not active.', 'checkoutbridge'), array('status' => 500));
+            return new WP_Error('wc_missing', __('WooCommerce plugin is not active.', 'op-checkoutbridge'), array('status' => 500));
         }
 
         // Validate Customer Data
@@ -23,13 +23,13 @@ class OP_CB_Order_Engine {
         $address   = isset($customer_data['address']) ? trim(sanitize_textarea_field($customer_data['address'])) : '';
 
         if (empty($full_name)) {
-            return new WP_Error('invalid_customer', __('Customer full name is required.', 'checkoutbridge'), array('status' => 400));
+            return new WP_Error('invalid_customer', __('Customer full name is required.', 'op-checkoutbridge'), array('status' => 400));
         }
         if (empty($phone)) {
-            return new WP_Error('invalid_customer', __('Customer phone number is required.', 'checkoutbridge'), array('status' => 400));
+            return new WP_Error('invalid_customer', __('Customer phone number is required.', 'op-checkoutbridge'), array('status' => 400));
         }
         if (empty($address)) {
-            return new WP_Error('invalid_customer', __('Customer full address is required.', 'checkoutbridge'), array('status' => 400));
+            return new WP_Error('invalid_customer', __('Customer full address is required.', 'op-checkoutbridge'), array('status' => 400));
         }
 
         // Name Splitter (handles multi-space and leading whitespace cleanly)
@@ -40,7 +40,7 @@ class OP_CB_Order_Engine {
         // Validate Assigned Campaign Products
         $assigned_product_ids = !empty($landing['assigned_products']) ? array_unique(array_map('intval', $landing['assigned_products'])) : array();
         if (empty($assigned_product_ids)) {
-            return new WP_Error('no_products', __('No products are assigned to this landing campaign.', 'checkoutbridge'), array('status' => 400));
+            return new WP_Error('no_products', __('No products are assigned to this landing campaign.', 'op-checkoutbridge'), array('status' => 400));
         }
 
         // Build Requested Items Map from Payload: items = [ {id: 14, quantity: 2}, ... ]
@@ -63,7 +63,7 @@ class OP_CB_Order_Engine {
 
         // Strictly enforce: items array is required! No automatic fallback allowed.
         if (empty($requested_items)) {
-            return new WP_Error('missing_items', __('Order payload must contain an items array with at least one valid assigned product ID.', 'checkoutbridge'), array('status' => 400));
+            return new WP_Error('missing_items', __('Order payload must contain an items array with at least one valid assigned product ID.', 'op-checkoutbridge'), array('status' => 400));
         }
 
         // Query & validate WooCommerce products for requested items
@@ -79,7 +79,7 @@ class OP_CB_Order_Engine {
         }
 
         if (empty($order_line_items)) {
-            return new WP_Error('products_unavailable', __('Selected products are unavailable or out of stock in WooCommerce.', 'checkoutbridge'), array('status' => 400));
+            return new WP_Error('products_unavailable', __('Selected products are unavailable or out of stock in WooCommerce.', 'op-checkoutbridge'), array('status' => 400));
         }
 
         // Resolve Shipping Choice & Cost Dynamically
@@ -112,7 +112,7 @@ class OP_CB_Order_Engine {
             // Fallback: If requested shipping ID is unverified/unrecognized, use first enabled option
             if ($shipping_cost === null && $first_enabled_option !== null) {
                 $shipping_id    = isset($first_enabled_option['id']) ? $first_enabled_option['id'] : 'standard_delivery';
-                $shipping_label = isset($first_enabled_option['label']) ? $first_enabled_option['label'] : 'Standard Delivery';
+                $shipping_label = isset($first_enabled_option['label']) ? $first_enabled_option['label'] : __('Standard Delivery', 'op-checkoutbridge');
                 $shipping_cost  = floatval(isset($first_enabled_option['cost']) ? $first_enabled_option['cost'] : 0);
             }
         }
@@ -121,7 +121,7 @@ class OP_CB_Order_Engine {
             $shipping_cost = 0.0;
         }
         if (empty($shipping_label)) {
-            $shipping_label = !empty($shipping_id) ? ucwords(str_replace(array('_', '-'), ' ', $shipping_id)) : __('Standard Delivery', 'checkoutbridge');
+            $shipping_label = !empty($shipping_id) ? ucwords(str_replace(array('_', '-'), ' ', $shipping_id)) : __('Standard Delivery', 'op-checkoutbridge');
         }
 
         // Bulletproof Mailer Bypass: Short-circuit wp_mail & strip email notification hooks before wc_create_order
@@ -157,19 +157,18 @@ class OP_CB_Order_Engine {
             $shipping_item->set_method_id($shipping_id);
             $shipping_item->set_total($shipping_cost);
             $order->add_item($shipping_item);
-        } else {
-            // WC_Order_Item_Shipping is a core WooCommerce class — log if unexpectedly missing
-            if (defined('WP_DEBUG') && WP_DEBUG) {
-                error_log('[CheckoutBridge] WC_Order_Item_Shipping class not found. Shipping line item was not added to order #' . $order->get_id());
-            }
         }
 
         // Customer Billing & Shipping Address
         $email = isset($customer_data['email']) ? sanitize_email($customer_data['email']) : '';
+        $city  = isset($customer_data['city']) ? sanitize_text_field($customer_data['city']) : '';
+        $country = isset($customer_data['country']) ? sanitize_text_field($customer_data['country']) : (class_exists('WC_Countries') ? WC()->countries->get_base_country() : '');
         $address_data = array(
             'first_name' => $first_name,
             'last_name'  => $last_name,
             'address_1'  => $address,
+            'city'       => $city,
+            'country'    => $country,
             'phone'      => $phone,
             'email'      => $email,
         );
@@ -182,8 +181,8 @@ class OP_CB_Order_Engine {
         $order->set_payment_method_title('Cash on delivery');
 
         // Save Custom Order Metadata
-        $order->update_meta_data('_op_cb_landing_name', $landing['name']);
-        $order->update_meta_data('_op_cb_landing_token', $landing['token']);
+        $order->update_meta_data('_op_cb_bridge_name', $landing['name']);
+        $order->update_meta_data('_op_cb_bridge_token', $landing['token']);
         $order->update_meta_data('_op_cb_shipping_id', $shipping_id);
         $order->update_meta_data('_op_cb_shipping_label', $shipping_label);
         $order->update_meta_data('_op_cb_shipping_cost', $shipping_cost);
@@ -193,12 +192,15 @@ class OP_CB_Order_Engine {
         if (!empty($coupon_code)) {
             $coupon = new \WC_Coupon($coupon_code);
             if (!$coupon->get_id()) {
-                return new WP_Error('invalid_coupon', sprintf(__('The coupon code "%s" does not exist.', 'checkoutbridge'), $coupon_code), array('status' => 400));
+                $order->delete(true);
+                /* translators: %s: Coupon code */
+                return new WP_Error('invalid_coupon', sprintf(__('The coupon code "%s" does not exist.', 'op-checkoutbridge'), $coupon_code), array('status' => 400));
             }
 
             // Apply coupon to WooCommerce Order
             $applied = $order->apply_coupon($coupon_code);
             if (is_wp_error($applied)) {
+                $order->delete(true);
                 return new WP_Error('coupon_application_failed', $applied->get_error_message(), array('status' => 400));
             }
             $order->update_meta_data('_op_cb_coupon_code', $coupon_code);
@@ -219,30 +221,32 @@ class OP_CB_Order_Engine {
             if (!empty($meta_capi['user_agent'])) {
                 $order->update_meta_data('_op_cb_user_agent', sanitize_text_field($meta_capi['user_agent']));
             }
-            if (!empty($meta_capi['client_ip'])) {
-                $order->update_meta_data('_op_cb_client_ip', sanitize_text_field($meta_capi['client_ip']));
-            }
         }
 
+        // Save server-verified client IP for reliable HPOS tracking and anti-bot verification
+        $trusted_client_ip = OP_CB_Security::get_trusted_ip();
+        $order->update_meta_data('_op_cb_client_ip', $trusted_client_ip);
+
         // Completely disable WooCommerce email notifications for CheckoutBridge orders (phone/COD landing pages don't require emails)
+        add_filter('pre_wp_mail', '__return_true');
         add_filter('woocommerce_email_enabled_new_order', '__return_false');
         add_filter('woocommerce_email_enabled_customer_processing_order', '__return_false');
         add_filter('woocommerce_allow_send_queued_transactional_email', '__return_false');
         add_filter('woocommerce_email_classes', '__return_empty_array');
 
         // Set Order Status & Recalculate Totals
-        $order->set_status('processing', __('Order created via CheckoutBridge.', 'checkoutbridge'));
-        $order->calculate_totals(false);
+        $order->set_status('processing', __('Order created via CheckoutBridge.', 'op-checkoutbridge'));
+        $order->calculate_totals(true);
         $order->save();
 
         // Trigger WordPress Server-Side Meta CAPI Action Hook for 3rd Party Integrations
+        do_action('op_cb_order_created_meta_capi', $order->get_id(), $meta_capi, $landing);
         do_action('checkoutbridge_order_created_meta_capi', $order->get_id(), $meta_capi, $landing);
 
         // Increment order counter for this bridge and record velocity transient
         OP_CB_Bridge_Repository::increment_orders_count($landing['id']);
         $velocity_hours = isset($landing['velocity_hours']) ? intval($landing['velocity_hours']) : 24;
-        $client_ip = !empty($meta_capi['client_ip']) ? $meta_capi['client_ip'] : '';
-        OP_CB_Security::record_order_velocity($phone, $client_ip, $velocity_hours);
+        OP_CB_Security::record_order_velocity($phone, $trusted_client_ip, $velocity_hours);
 
         return $order;
     }
@@ -252,12 +256,12 @@ class OP_CB_Order_Engine {
      */
     public static function get_order_details($order_id) {
         if (!class_exists('WooCommerce')) {
-            return new WP_Error('wc_missing', __('WooCommerce plugin is not active.', 'checkoutbridge'), array('status' => 500));
+            return new WP_Error('wc_missing', __('WooCommerce plugin is not active.', 'op-checkoutbridge'), array('status' => 500));
         }
 
         $order = wc_get_order($order_id);
         if (!$order) {
-            return new WP_Error('order_not_found', __('Order not found.', 'checkoutbridge'), array('status' => 404));
+            return new WP_Error('order_not_found', __('Order not found.', 'op-checkoutbridge'), array('status' => 404));
         }
 
         // Format Customer Info
@@ -355,17 +359,18 @@ class OP_CB_Order_Engine {
      */
     public static function validate_coupon_code($landing, $coupon_code, $raw_params = array()) {
         if (!class_exists('WooCommerce')) {
-            return new WP_Error('wc_missing', __('WooCommerce plugin is not active.', 'checkoutbridge'), array('status' => 500));
+            return new WP_Error('wc_missing', __('WooCommerce plugin is not active.', 'op-checkoutbridge'), array('status' => 500));
         }
 
         $code = strtoupper(trim(sanitize_text_field($coupon_code)));
         if (empty($code)) {
-            return new WP_Error('missing_coupon', __('Coupon code is required.', 'checkoutbridge'), array('status' => 400));
+            return new WP_Error('missing_coupon', __('Coupon code is required.', 'op-checkoutbridge'), array('status' => 400));
         }
 
         $coupon = new \WC_Coupon($code);
         if (!$coupon->get_id()) {
-            return new WP_Error('invalid_coupon', sprintf(__('The coupon code "%s" is invalid or does not exist.', 'checkoutbridge'), $code), array('status' => 400));
+            /* translators: %s: Coupon code */
+            return new WP_Error('invalid_coupon', sprintf(__('The coupon code "%s" is invalid or does not exist.', 'op-checkoutbridge'), $code), array('status' => 400));
         }
 
         // Validate assigned products & build items array
@@ -400,7 +405,7 @@ class OP_CB_Order_Engine {
         // Create temporary order in memory to calculate exact WooCommerce coupon discount
         $temp_order = wc_create_order(array('status' => 'pending'));
         if (is_wp_error($temp_order)) {
-            return new WP_Error('temp_order_error', __('Unable to calculate coupon discount.', 'checkoutbridge'), array('status' => 500));
+            return new WP_Error('temp_order_error', __('Unable to calculate coupon discount.', 'op-checkoutbridge'), array('status' => 500));
         }
 
         foreach ($requested_items as $prod_id => $qty) {
@@ -433,6 +438,9 @@ class OP_CB_Order_Engine {
 
         $temp_order->delete(true); // Clean up temporary order
 
+        /* translators: %s: Coupon code */
+        $applied_msg = sprintf(__('Coupon code "%s" applied successfully.', 'op-checkoutbridge'), $code);
+
         return array(
             'success'            => true,
             'valid'              => true,
@@ -441,12 +449,88 @@ class OP_CB_Order_Engine {
                 'discount_type'      => $discount_type,
                 'coupon_amount'      => $coupon_amount,
                 'discount_amount'    => $discount_amount,
-                'discount_formatted' => function_exists('wc_price') ? strip_tags(wc_price($discount_amount)) : number_format($discount_amount, 2),
+                'discount_formatted' => function_exists('wc_price') ? wp_strip_all_tags(wc_price($discount_amount)) : number_format($discount_amount, 2),
                 'subtotal'           => $subtotal,
                 'shipping'           => $shipping_cost,
                 'total'              => $grand_total,
             ),
-            'message'            => sprintf(__('Coupon code "%s" applied successfully.', 'checkoutbridge'), $code)
+            'message'            => $applied_msg
+        );
+    }
+
+    /**
+     * Search WooCommerce past orders for customer details by phone number (Autofill feature)
+     */
+    public static function lookup_customer_by_phone($landing, $phone) {
+        if (!class_exists('WooCommerce')) {
+            return new WP_Error('wc_missing', __('WooCommerce plugin is not active.', 'op-checkoutbridge'), array('status' => 500));
+        }
+
+        $phone_raw = trim(sanitize_text_field($phone));
+        if (empty($phone_raw)) {
+            return new WP_Error('missing_phone', __('Phone number is required for lookup.', 'op-checkoutbridge'), array('status' => 400));
+        }
+
+        $normalized_phone = OP_CB_Security::normalize_phone_number($phone_raw);
+        if (empty($normalized_phone) || strlen($normalized_phone) < 7) {
+            return new WP_Error('invalid_phone', __('Phone number must be at least 7 digits.', 'op-checkoutbridge'), array('status' => 400));
+        }
+
+        // Check if autofill lookup feature is enabled for this bridge campaign
+        $is_enabled = isset($landing['enable_autofill_lookup']) ? (bool)$landing['enable_autofill_lookup'] : true;
+        if (!$is_enabled) {
+            return new WP_Error('autofill_disabled', __('Customer phone lookup is disabled for this campaign.', 'op-checkoutbridge'), array('status' => 403));
+        }
+
+        // Query last matching order with this billing phone across ALL order statuses (HPOS & legacy compatible)
+        $phone_variants = OP_CB_Security::generate_phone_variants($normalized_phone);
+
+        $orders = wc_get_orders(array(
+            'limit'         => 5,
+            'status'        => 'any',
+            'orderby'       => 'date',
+            'order'         => 'DESC',
+            'billing_phone' => $phone_variants,
+        ));
+
+        // Fallback for custom metadata setups
+        if (empty($orders)) {
+            $orders = wc_get_orders(array(
+                'limit'        => 5,
+                'status'       => 'any',
+                'orderby'      => 'date',
+                'order'        => 'DESC',
+                'meta_key'     => '_billing_phone',
+                'meta_value'   => $phone_variants,
+                'meta_compare' => 'IN'
+            ));
+        }
+
+        if (empty($orders)) {
+            return array(
+                'success' => true,
+                'found'   => false,
+                'message' => __('No previous order found for this phone number.', 'op-checkoutbridge')
+            );
+        }
+
+        $matched_order = reset($orders);
+        $first_name    = $matched_order->get_billing_first_name();
+        $last_name     = $matched_order->get_billing_last_name();
+        $full_name     = trim($first_name . ' ' . $last_name);
+
+        return array(
+            'success'  => true,
+            'found'    => true,
+            'customer' => array(
+                'full_name' => $full_name,
+                'phone'     => $matched_order->get_billing_phone(),
+                'address'   => $matched_order->get_billing_address_1(),
+                'city'      => $matched_order->get_billing_city(),
+            ),
+            'stats' => array(
+                'total_orders' => count($orders)
+            )
         );
     }
 }

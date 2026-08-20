@@ -34,6 +34,28 @@ class OP_CB_Security {
     }
 
     /**
+     * Get trusted client IP address strictly from server environment
+     *
+     * @return string Validated IP address
+     */
+    public static function get_trusted_ip() {
+        $ip = isset($_SERVER['REMOTE_ADDR']) ? sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR'])) : '';
+
+        if (!empty($_SERVER['HTTP_CF_CONNECTING_IP'])) {
+            $cf_ip = sanitize_text_field(wp_unslash($_SERVER['HTTP_CF_CONNECTING_IP']));
+            if (filter_var($cf_ip, FILTER_VALIDATE_IP)) {
+                $ip = $cf_ip;
+            }
+        }
+
+        if (filter_var($ip, FILTER_VALIDATE_IP)) {
+            return $ip;
+        }
+
+        return '127.0.0.1';
+    }
+
+    /**
      * Handle CORS headers for rest endpoints
      */
     public static function handle_cors($served, $result, $request, $server) {
@@ -44,11 +66,11 @@ class OP_CB_Security {
                 header("Access-Control-Allow-Origin: " . esc_url_raw($origin));
                 header("Access-Control-Allow-Credentials: true");
             } else {
-                // Server-to-server requests: reflect no specific origin, no credentials
+                // Server-to-server requests: reflect no specific origin
                 header("Access-Control-Allow-Origin: " . esc_url_raw(home_url()));
             }
             header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
-            header("Access-Control-Allow-Headers: Authorization, Content-Type, X-Requested-With, X-Landing-Token");
+            header("Access-Control-Allow-Headers: Authorization, Content-Type, X-Requested-With, X-OP-CB-Token");
             header("Access-Control-Max-Age: 3600");
         }
         return $served;
@@ -64,7 +86,8 @@ class OP_CB_Security {
 
         $request_origin = get_http_origin();
         if (!$request_origin && isset($_SERVER['HTTP_REFERER'])) {
-            $parsed = parse_url($_SERVER['HTTP_REFERER']);
+            $referer = sanitize_text_field(wp_unslash($_SERVER['HTTP_REFERER']));
+            $parsed  = wp_parse_url($referer);
             if ($parsed && isset($parsed['scheme']) && isset($parsed['host'])) {
                 $request_origin = $parsed['scheme'] . '://' . $parsed['host'];
                 if (isset($parsed['port'])) {
@@ -80,10 +103,12 @@ class OP_CB_Security {
 
         $request_origin = rtrim(strtolower($request_origin), '/');
         
-        // Always allow same-site requests and local development loopbacks (localhost / 127.0.0.1)
+        // Always allow same-site requests and local development loopbacks (localhost / 127.0.0.1 / ::1)
         $home_origin = rtrim(strtolower(home_url()), '/');
         $site_origin = rtrim(strtolower(site_url()), '/');
-        if ($request_origin === $home_origin || $request_origin === $site_origin || strpos($request_origin, 'localhost') !== false || strpos($request_origin, '127.0.0.1') !== false) {
+        $origin_host = wp_parse_url($request_origin, PHP_URL_HOST);
+        $is_loopback = in_array($origin_host, array('localhost', '127.0.0.1', '::1'), true);
+        if ($request_origin === $home_origin || $request_origin === $site_origin || $is_loopback) {
             return true;
         }
 
@@ -112,7 +137,7 @@ class OP_CB_Security {
     /**
      * Generate HMAC SHA-256 signed redirect token
      */
-    public static function generate_signed_token($order_id, $landing_token, $ttl = 86400) {
+    public static function generate_signed_token($order_id, $bridge_token, $ttl = 86400) {
         $secret_key = self::get_secret_key();
 
         try {
@@ -122,10 +147,10 @@ class OP_CB_Security {
         }
 
         $payload = array(
-            'order_id' => (int) $order_id,
-            'landing_token' => sanitize_text_field($landing_token),
-            'exp' => time() + intval($ttl),
-            'nonce' => $nonce
+            'order_id'     => (int) $order_id,
+            'bridge_token' => sanitize_text_field($bridge_token),
+            'exp'          => time() + intval($ttl),
+            'nonce'        => $nonce
         );
 
         $encoded_payload = self::base64url_encode(json_encode($payload));
@@ -173,31 +198,31 @@ class OP_CB_Security {
      *
      * @param string $shipping_id   Shipping option slug (e.g. "inside_dhaka")
      * @param float  $shipping_cost Shipping cost amount
-     * @param string $landing_token Landing token to bind the signature to
+     * @param string $bridge_token Bridge token to bind the signature to
      * @return string HMAC signature
      */
-    public static function generate_shipping_signature($shipping_id, $shipping_cost, $landing_token) {
+    public static function generate_shipping_signature($shipping_id, $shipping_cost, $bridge_token) {
         $secret_key = self::get_secret_key();
 
-        $payload = 'ship:' . $shipping_id . ':' . number_format((float) $shipping_cost, 2, '.', '') . ':' . $landing_token;
+        $payload = 'ship:' . $shipping_id . ':' . number_format((float) $shipping_cost, 2, '.', '') . ':' . $bridge_token;
         return hash_hmac('sha256', $payload, $secret_key);
     }
 
     /**
      * Verify HMAC SHA-256 shipping signature
      *
-     * @param string $shipping_id      Shipping option slug
-     * @param float  $shipping_cost    Shipping cost amount
-     * @param string $landing_token    Landing token the signature is bound to
-     * @param string $signature        The signature to verify
+     * @param string $shipping_id   Shipping option slug
+     * @param float  $shipping_cost Shipping cost amount
+     * @param string $bridge_token  Bridge token the signature is bound to
+     * @param string $signature     The signature to verify
      * @return bool True if signature is valid
      */
-    public static function verify_shipping_signature($shipping_id, $shipping_cost, $landing_token, $signature) {
-        if (empty($shipping_id) || empty($signature) || empty($landing_token)) {
+    public static function verify_shipping_signature($shipping_id, $shipping_cost, $bridge_token, $signature) {
+        if (empty($shipping_id) || empty($signature) || empty($bridge_token)) {
             return false;
         }
 
-        $expected = self::generate_shipping_signature($shipping_id, $shipping_cost, $landing_token);
+        $expected = self::generate_shipping_signature($shipping_id, $shipping_cost, $bridge_token);
         return hash_equals($expected, $signature);
     }
 
@@ -211,18 +236,20 @@ class OP_CB_Security {
      */
     public static function check_rate_limit($identifier, $max_requests = 10, $window_seconds = 60) {
         $transient_key = 'op_cb_rl_' . md5($identifier);
-        $count = get_transient($transient_key);
+        $data = get_transient($transient_key);
 
-        if (false === $count) {
-            set_transient($transient_key, 1, $window_seconds);
+        $now = time();
+        if (false === $data || !is_array($data) || empty($data['reset']) || $now >= $data['reset']) {
+            set_transient($transient_key, array('count' => 1, 'reset' => $now + $window_seconds), $window_seconds);
             return true;
         }
 
-        if ($count >= $max_requests) {
+        if ($data['count'] >= $max_requests) {
             return false;
         }
 
-        set_transient($transient_key, $count + 1, $window_seconds);
+        $remaining_ttl = max(1, $data['reset'] - $now);
+        set_transient($transient_key, array('count' => $data['count'] + 1, 'reset' => $data['reset']), $remaining_ttl);
         return true;
     }
 
@@ -263,6 +290,36 @@ class OP_CB_Security {
         }
 
         return $digits;
+    }
+
+    /**
+     * Generate common search variations for a phone number (E.164, local, plus prefix)
+     *
+     * @param string $phone Phone number string
+     * @return array Array of unique normalized and local phone variants
+     */
+    public static function generate_phone_variants($phone) {
+        $normalized = self::normalize_phone_number($phone);
+        if (empty($normalized)) {
+            return array();
+        }
+
+        $variants = array($normalized);
+        if (substr($normalized, 0, 2) === '88') {
+            $local = substr($normalized, 2);
+            $variants[] = $local;
+            $variants[] = '0' . $local;
+            $variants[] = '+88' . $local;
+            $variants[] = '+880' . $local;
+        } elseif (substr($normalized, 0, 1) === '1' && strlen($normalized) === 11) {
+            $variants[] = substr($normalized, 1);
+            $variants[] = '+1' . substr($normalized, 1);
+        } else {
+            $variants[] = '+' . $normalized;
+            $variants[] = '0' . $normalized;
+        }
+
+        return array_values(array_unique($variants));
     }
 
     /**
@@ -361,7 +418,7 @@ class OP_CB_Security {
 
         global $wpdb;
         $hours = max(1, intval($timeframe_hours));
-        $cutoff = date('Y-m-d H:i:s', time() - ($hours * 3600));
+        $cutoff = gmdate('Y-m-d H:i:s', time() - ($hours * 3600));
 
         $is_hpos = class_exists('\Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController') && wc_get_container()->get(\Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController::class)->custom_orders_table_usage_is_enabled();
         $table_meta = $wpdb->prefix . ($is_hpos ? 'wc_orders_meta' : 'postmeta');
@@ -370,16 +427,18 @@ class OP_CB_Security {
         $order_id_col = $is_hpos ? 'order_id' : 'post_id';
         $date_col = $is_hpos ? 'date_created_gmt' : 'post_date_gmt';
 
-        $query = $wpdb->prepare(
-            "SELECT COUNT(DISTINCT o.{$id_col}) 
-             FROM {$table_orders} o 
-             INNER JOIN {$table_meta} m1 ON o.{$id_col} = m1.{$order_id_col} AND m1.meta_key = '_op_cb_client_ip' 
-             WHERE o.{$date_col} >= %s AND m1.meta_value = %s",
-            $cutoff,
-            $client_ip
-        );
+        // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+        $db_count = intval($wpdb->get_var(
+            $wpdb->prepare(
+                "SELECT COUNT(DISTINCT o.{$id_col}) 
+                 FROM {$table_orders} o 
+                 INNER JOIN {$table_meta} m1 ON o.{$id_col} = m1.{$order_id_col} AND m1.meta_key = '_op_cb_client_ip' 
+                 WHERE o.{$date_col} >= %s AND m1.meta_value = %s",
+                $cutoff,
+                $client_ip
+            )
+        ));
 
-        $db_count = intval($wpdb->get_var($query));
         set_transient($transient_key, $db_count, $hours * 3600);
 
         return $db_count < $limit;

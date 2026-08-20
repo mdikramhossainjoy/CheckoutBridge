@@ -65,3 +65,21 @@ $gap-lg:         28px;
 $wrap-max:       1240px;
 $bp-tablet:      960px;
 $bp-mobile:      600px;
+
+// ── Legacy & Component SCSS Aliases ────────────────────────────────────────
+$text:           $text-dark;
+$text-soft:      $text-body;
+$fw-heading:     $fw-semibold;
+$fw-heavy:       $fw-bold;
+$gap:            $gap-md;
+$border:         $border-color;
+$bg:             $bg-canvas;
+$surface:        $surface-card;
+$primary-soft:   $primary-light;
+$success-soft:   $success-bg;
+$danger-soft:    $danger-bg;
+$r:              $r-md;
+$t:              200ms ease;
+$t-fast:         150ms ease;
+$t-slow:         300ms ease;
+$ease:           cubic-bezier(0.16, 1, 0.3, 1);
