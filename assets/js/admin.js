@@ -223,9 +223,9 @@ jQuery(document).ready(function ($) {
     $wrapper.find('#' + tabId).removeClass('op-cb-hidden');
   });
 
-  /* ── 5. Landings List — Instant Search & Status Filter ──────────── */
+  /* ── 5. Bridges List — Search & Status Filter ──────────── */
   function filterLandingsTable() {
-    var q      = ($('#op_cb_search_landings').val() || '').toLowerCase();
+    var q      = ($('#op_cb_table_search, #op_cb_search_landings').val() || '').toLowerCase();
     var status = ($('#op_cb_filter_status').val() || 'all');
 
     $('#op_cb_landings_table tbody tr').each(function () {
@@ -240,14 +240,14 @@ jQuery(document).ready(function ($) {
     });
   }
 
-  $('#op_cb_search_landings').on('keyup input', debounce(filterLandingsTable, 150));
+  $('#op_cb_table_search, #op_cb_search_landings').on('keyup input', debounce(filterLandingsTable, 150));
   $('#op_cb_filter_status').on('change', filterLandingsTable);
 
-  /* ── 6. Product Picker — Search Filter + Counter ─────────────────── */
+  /* ── 6. Product Picker — Search Filter & Counter ─────────────────── */
   function updateProductCounter() {
     var count = $('.op-cb-product-item input[type="checkbox"]:checked').length;
     var label = getI18n('selected', 'selected');
-    $('#op_cb_selected_count').text(count + ' ' + label);
+    $('#op_cb_selected_counter, #op_cb_selected_count').text(count + ' ' + label);
   }
 
   updateProductCounter();

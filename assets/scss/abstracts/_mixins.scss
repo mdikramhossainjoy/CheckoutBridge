@@ -74,3 +74,9 @@
   text-overflow: ellipsis;
   vertical-align: middle;
 }
+
+// ── Legacy & Component Mixin Aliases ───────────────────────────────────────
+@mixin ghost-card { @include minimal-card; }
+@mixin ghost-surface { @include minimal-card; }
+@mixin dot($size: 8px) { @include dot-indicator($size); }
+@mixin btn-full { width: 100% !important; justify-content: center !important; }

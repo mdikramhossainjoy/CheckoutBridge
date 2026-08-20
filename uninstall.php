@@ -14,13 +14,16 @@ if (!defined('WP_UNINSTALL_PLUGIN')) {
 
 // Drop custom database table
 global $wpdb;
-$table_name = $wpdb->prefix . 'op_cb_landings';
-$wpdb->query("DROP TABLE IF EXISTS {$table_name}");
+$op_cb_table_name = $wpdb->prefix . 'op_cb_landings';
+// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+$wpdb->query("DROP TABLE IF EXISTS {$op_cb_table_name}");
 
 // Delete plugin options
 delete_option('op_cb_db_version');
 delete_option('op_cb_secret_key');
 
 // Clear any transients related to rate limiting
-$wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_op_cb_rl_%'");
-$wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_timeout_op_cb_rl_%'");
+// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+$wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_op_cb_%'");
+// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+$wpdb->query("DELETE FROM {$wpdb->options} WHERE option_name LIKE '_transient_timeout_op_cb_%'");

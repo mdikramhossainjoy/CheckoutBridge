@@ -1,11 +1,12 @@
 === CheckoutBridge ===
 Contributors: checkoutbridge
-Tags: woocommerce, landing page, checkout, cod, api, headless
+Tags: woocommerce, checkout, cod, api, headless
 Requires at least: 5.8
-Tested up to: 6.6
+Tested up to: 7.1
 Requires PHP: 7.4
+Requires Plugins: woocommerce
 WC requires at least: 5.0
-WC tested up to: 9.0
+WC tested up to: 9.3
 Stable tag: 1.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -31,7 +32,7 @@ It maintains WooCommerce as the single source of truth for product pricing, inve
 
 == Installation ==
 
-1. Upload the `checkoutbridge` directory to your `/wp-content/plugins/` directory.
+1. Upload the `op-checkoutbridge` directory to your `/wp-content/plugins/` directory.
 2. Activate the plugin through the 'Plugins' menu in WordPress.
 3. Ensure **WooCommerce** is active.
 4. Navigate to **CheckoutBridge > Bridges Manager** to create your first landing campaign.

@@ -77,20 +77,10 @@ class OP_CB_Activator {
         global $wpdb;
         $table_name = $wpdb->prefix . 'op_cb_landings';
 
-        // Future migration examples — add new version blocks here:
-        //
-        // if (version_compare($installed_version, '1.1.0', '<')) {
-        //     $wpdb->query("ALTER TABLE {$table_name} ADD COLUMN new_column varchar(255) DEFAULT NULL");
-        // }
-        //
-        // if (version_compare($installed_version, '1.2.0', '<')) {
-        //     $wpdb->query("ALTER TABLE {$table_name} ADD INDEX new_index (new_column)");
-        // }
-
-        // Always re-run dbDelta to ensure schema matches latest definition
+        // Re-run dbDelta to ensure schema matches latest definition
         self::create_tables();
 
-        // Bump stored version to current
+        // Update stored version
         update_option('op_cb_db_version', OP_CB_VERSION);
     }
 }

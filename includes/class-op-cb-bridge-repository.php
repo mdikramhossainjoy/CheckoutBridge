@@ -40,13 +40,15 @@ class OP_CB_Bridge_Repository {
         global $wpdb;
         $table = self::get_table_name();
 
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         if ($status) {
-            $sql = $wpdb->prepare("SELECT * FROM {$table} WHERE status = %s ORDER BY id DESC", $status);
+            // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+            $results = $wpdb->get_results($wpdb->prepare("SELECT * FROM {$table} WHERE status = %s ORDER BY id DESC", $status), ARRAY_A);
         } else {
-            $sql = "SELECT * FROM {$table} ORDER BY id DESC";
+            // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+            $results = $wpdb->get_results("SELECT * FROM {$table} ORDER BY id DESC", ARRAY_A);
         }
 
-        $results = $wpdb->get_results($sql, ARRAY_A);
         return array_map(array(__CLASS__, 'format_landing'), $results ? $results : array());
     }
 
@@ -197,6 +199,7 @@ class OP_CB_Bridge_Repository {
     public static function increment_orders_count($id) {
         global $wpdb;
         $table = self::get_table_name();
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         return $wpdb->query($wpdb->prepare("UPDATE {$table} SET orders_count = orders_count + 1 WHERE id = %d", $id));
     }
 
@@ -207,8 +210,11 @@ class OP_CB_Bridge_Repository {
         global $wpdb;
         $table = self::get_table_name();
 
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         $total_landings = (int) $wpdb->get_var("SELECT COUNT(*) FROM {$table}");
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         $active_landings = (int) $wpdb->get_var("SELECT COUNT(*) FROM {$table} WHERE status = 'active'");
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
         $total_orders = (int) $wpdb->get_var("SELECT SUM(orders_count) FROM {$table}");
 
         return array(
@@ -236,15 +242,10 @@ class OP_CB_Bridge_Repository {
             $row['shipping_options'] = array();
         }
 
-        $row['phone_velocity_limit'] = isset($row['shipping_options']['phone_velocity_limit']) ? intval($row['shipping_options']['phone_velocity_limit']) : 1;
-        $row['ip_velocity_limit']    = isset($row['shipping_options']['ip_velocity_limit']) ? intval($row['shipping_options']['ip_velocity_limit']) : 3;
-        $row['velocity_hours']       = isset($row['shipping_options']['velocity_hours']) ? intval($row['shipping_options']['velocity_hours']) : 24;
+        $row['phone_velocity_limit']  = isset($row['shipping_options']['phone_velocity_limit']) ? intval($row['shipping_options']['phone_velocity_limit']) : 1;
+        $row['ip_velocity_limit']     = isset($row['shipping_options']['ip_velocity_limit']) ? intval($row['shipping_options']['ip_velocity_limit']) : 3;
+        $row['velocity_hours']        = isset($row['shipping_options']['velocity_hours']) ? intval($row['shipping_options']['velocity_hours']) : 24;
 
         return $row;
     }
 }
-
-/**
- * Backwards compatibility alias class
- */
-class OP_CB_Landing_Repository extends OP_CB_Bridge_Repository {}

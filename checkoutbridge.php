@@ -1,17 +1,21 @@
 <?php
 /**
- * Plugin Name: CheckoutBridge
- * Plugin URI: https://github.com/checkoutbridge/checkoutbridge
- * Description: Secure bridge connecting WooCommerce with external custom landing pages for automated COD order creation and order details management.
- * Version: 1.0.0
- * Author: CheckoutBridge Team
- * Author URI: https://checkoutbridge.com
- * Text Domain: checkoutbridge
- * Domain Path: /languages
- * WC requires at least: 5.0
- * WC tested up to: 9.0
- * Requires PHP: 7.4
- * License: GPLv2 or later
+ * Plugin Name:       CheckoutBridge
+ * Plugin URI:        https://github.com/mdikramhossainjoy/CheckoutBridge
+ * Description:       Secure bridge connecting WooCommerce with external custom landing pages for automated COD order creation and order details management.
+ * Version:           1.0.0
+ * Requires at least: 5.8
+ * Tested up to:      7.1
+ * Requires PHP:      7.4
+ * Author:            CheckoutBridge Team
+ * Author URI:        https://checkoutbridge.com
+ * License:           GPL-2.0-or-later
+ * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
+ * Text Domain:       op-checkoutbridge
+ * Domain Path:       /languages
+ * Requires Plugins:  woocommerce
+ *
+ * @package           CheckoutBridge
  */
 
 if (!defined('ABSPATH')) {
@@ -79,6 +83,9 @@ final class OP_CB_Plugin {
      * Initialize plugin functionality after all plugins are loaded
      */
     public function init() {
+        // Load plugin text domain for internationalization
+        load_plugin_textdomain('op-checkoutbridge', false, dirname(plugin_basename(OP_CB_FILE)) . '/languages');
+
         // WooCommerce Dependency Check
         if (!self::is_woocommerce_active()) {
             add_action('admin_notices', array($this, 'woocommerce_missing_notice'));
@@ -108,8 +115,8 @@ final class OP_CB_Plugin {
         ?>
         <div class="notice notice-error is-dismissible op-cb-notice">
             <p>
-                <strong><?php esc_html_e('CheckoutBridge Warning:', 'checkoutbridge'); ?></strong> 
-                <?php esc_html_e('WooCommerce is required for CheckoutBridge to function properly. Please install and activate WooCommerce.', 'checkoutbridge'); ?>
+                <strong><?php esc_html_e('CheckoutBridge Warning:', 'op-checkoutbridge'); ?></strong> 
+                <?php esc_html_e('WooCommerce is required for CheckoutBridge to function properly. Please install and activate WooCommerce.', 'op-checkoutbridge'); ?>
             </p>
         </div>
         <?php
