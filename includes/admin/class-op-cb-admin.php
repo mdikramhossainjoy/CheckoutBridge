@@ -17,6 +17,7 @@ class OP_CB_Admin {
         add_action('admin_enqueue_scripts', array(__CLASS__, 'enqueue_assets'));
         add_action('admin_init', array(__CLASS__, 'handle_actions'));
         add_action('admin_post_op_cb_save_bridge', array(__CLASS__, 'handle_save_landing'));
+        add_action('admin_post_op_cb_resend_capi', array(__CLASS__, 'handle_resend_capi'));
         add_action('add_meta_boxes', array(__CLASS__, 'register_order_meta_boxes'));
         add_action('save_post_product', function() {
             delete_transient('op_cb_products_cache');
@@ -235,6 +236,12 @@ class OP_CB_Admin {
         $ip_velocity_limit    = isset($_POST['ip_velocity_limit']) ? intval($_POST['ip_velocity_limit']) : 3;
         $velocity_hours       = isset($_POST['velocity_hours']) ? intval($_POST['velocity_hours']) : 24;
 
+        // Meta (Facebook) CAPI Settings
+        $enable_meta_capi  = !empty($_POST['enable_meta_capi']) ? 1 : 0;
+        $meta_pixel_id     = isset($_POST['meta_pixel_id']) ? sanitize_text_field(wp_unslash($_POST['meta_pixel_id'])) : '';
+        $meta_access_token = isset($_POST['meta_access_token']) ? sanitize_textarea_field(wp_unslash($_POST['meta_access_token'])) : '';
+        $meta_test_code    = isset($_POST['meta_test_code']) ? sanitize_text_field(wp_unslash($_POST['meta_test_code'])) : '';
+
         $data = array(
             'name'                 => $name,
             'token'                => $token,
@@ -244,6 +251,10 @@ class OP_CB_Admin {
             'phone_velocity_limit' => $phone_velocity_limit,
             'ip_velocity_limit'    => $ip_velocity_limit,
             'velocity_hours'       => $velocity_hours,
+            'enable_meta_capi'     => $enable_meta_capi,
+            'meta_pixel_id'        => $meta_pixel_id,
+            'meta_access_token'    => $meta_access_token,
+            'meta_test_code'       => $meta_test_code,
             'thank_you_url'        => $thank_you,
             'status'               => $status
         );
@@ -313,11 +324,16 @@ class OP_CB_Admin {
             return;
         }
 
+        $order_id     = $order->get_id();
         $bridge_name  = $order->get_meta('_op_cb_bridge_name');
         $fbp          = $order->get_meta('_op_cb_fbp');
         $fbc          = $order->get_meta('_op_cb_fbc');
         $event_id     = $order->get_meta('_op_cb_event_id');
         $client_ip    = $order->get_meta('_op_cb_client_ip');
+        $capi_fired   = $order->get_meta('_op_cb_capi_purchase_fired');
+        $capi_status  = $order->get_meta('_op_cb_capi_status');
+        $capi_time    = $order->get_meta('_op_cb_capi_timestamp');
+        $capi_error   = $order->get_meta('_op_cb_capi_error');
 
         if (empty($bridge_name) && empty($event_id)) {
             echo '<p style="color:#64748b;font-size:12px;margin:0;">' . esc_html__('This order was not created via CheckoutBridge.', 'op-checkoutbridge') . '</p>';
@@ -338,8 +354,75 @@ class OP_CB_Admin {
             echo '<p style="margin:0 0 6px 0;"><strong>' . esc_html__('Facebook _fbc (fbclid):', 'op-checkoutbridge') . '</strong> <br><code style="background:#f1f5f9;color:#0f172a;padding:2px 6px;border-radius:4px;font-size:11px;">' . esc_html($fbc) . '</code></p>';
         }
         if ($client_ip) {
-            echo '<p style="margin:0 0 4px 0;"><strong>' . esc_html__('Customer IP:', 'op-checkoutbridge') . '</strong> <code style="background:#f1f5f9;color:#475569;padding:2px 4px;border-radius:3px;font-size:11px;">' . esc_html($client_ip) . '</code></p>';
+            echo '<p style="margin:0 0 6px 0;"><strong>' . esc_html__('Customer IP:', 'op-checkoutbridge') . '</strong> <code style="background:#f1f5f9;color:#475569;padding:2px 4px;border-radius:3px;font-size:11px;">' . esc_html($client_ip) . '</code></p>';
         }
+
+        // Meta CAPI Server-Side Purchase Status
+        echo '<div style="margin-top:8px;padding-top:8px;border-top:1px solid #e2e8f0;">';
+        echo '<p style="margin:0 0 4px 0;"><strong>' . esc_html__('CAPI Purchase Event:', 'op-checkoutbridge') . '</strong></p>';
+        if ($capi_fired && $capi_status === 'success') {
+            $time_str = $capi_time ? gmdate('Y-m-d H:i:s', $capi_time) . ' UTC' : '';
+            echo '<span class="op-cb-status-pill op-cb-status-active" style="display:inline-block;margin-bottom:4px;">' . esc_html__('Dispatched (200 OK)', 'op-checkoutbridge') . '</span>';
+            if ($time_str) {
+                echo '<div style="font-size:11px;color:#64748b;">' . esc_html($time_str) . '</div>';
+            }
+        } elseif ($capi_status === 'failed') {
+            echo '<span class="op-cb-status-pill op-cb-status-inactive" style="display:inline-block;margin-bottom:4px;">' . esc_html__('Failed', 'op-checkoutbridge') . '</span>';
+            if ($capi_error) {
+                echo '<div style="font-size:11px;color:#dc2626;margin-top:2px;">' . esc_html($capi_error) . '</div>';
+            }
+        } else {
+            echo '<span style="color:#64748b;font-size:11.5px;">' . esc_html__('Pending (fires on Processing)', 'op-checkoutbridge') . '</span>';
+        }
+
+        // Manual Resend Button
+        $resend_url = wp_nonce_url(
+            admin_url('admin-post.php?action=op_cb_resend_capi&order_id=' . $order_id),
+            'op_cb_resend_capi_' . $order_id
+        );
+        echo '<div style="margin-top:8px;">';
+        echo '<a href="' . esc_url($resend_url) . '" class="button button-small" style="font-size:11px;height:24px;line-height:22px;padding:0 8px;">';
+        echo '<i class="fa-solid fa-paper-plane" style="margin-right:3px;"></i> ' . esc_html__('Send / Retry CAPI Event', 'op-checkoutbridge');
+        echo '</a>';
         echo '</div>';
+
+        echo '</div>';
+        echo '</div>';
+    }
+
+    /**
+     * Handle manual resend of Meta CAPI Purchase event
+     */
+    public static function handle_resend_capi() {
+        if (!current_user_can('manage_options')) {
+            wp_die(esc_html__('You do not have sufficient permissions to access this page.', 'op-checkoutbridge'), 403);
+        }
+
+        $order_id = isset($_GET['order_id']) ? intval($_GET['order_id']) : 0;
+        if (!$order_id) {
+            wp_die(esc_html__('Invalid order ID.', 'op-checkoutbridge'), 400);
+        }
+
+        check_admin_referer('op_cb_resend_capi_' . $order_id);
+
+        $order = wc_get_order($order_id);
+        if ($order) {
+            // Clear fired flag to allow resend
+            $order->delete_meta_data('_op_cb_capi_purchase_fired');
+            $order->save();
+
+            OP_CB_Meta_CAPI::on_order_status_processing($order_id, $order);
+        }
+
+        $user_id = get_current_user_id();
+        set_transient('op_cb_flash_' . $user_id, array('message' => __('Meta CAPI Purchase event dispatch triggered.', 'op-checkoutbridge'), 'type' => 'success'), 60);
+
+        // Redirect back to order edit screen
+        $redirect = class_exists('\Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController') && wc_get_container()->get(\Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController::class)->custom_orders_table_usage_is_enabled()
+            ? admin_url('admin.php?page=wc-orders&action=edit&id=' . $order_id)
+            : admin_url('post.php?post=' . $order_id . '&action=edit');
+
+        wp_safe_redirect($redirect);
+        exit;
     }
 }

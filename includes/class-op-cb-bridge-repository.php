@@ -98,6 +98,18 @@ class OP_CB_Bridge_Repository {
         if (isset($data['velocity_hours'])) {
             $shipping_options['velocity_hours'] = intval($data['velocity_hours']);
         }
+        if (isset($data['enable_meta_capi'])) {
+            $shipping_options['enable_meta_capi'] = !empty($data['enable_meta_capi']) ? 1 : 0;
+        }
+        if (isset($data['meta_pixel_id'])) {
+            $shipping_options['meta_pixel_id'] = sanitize_text_field($data['meta_pixel_id']);
+        }
+        if (isset($data['meta_access_token'])) {
+            $shipping_options['meta_access_token'] = sanitize_textarea_field($data['meta_access_token']);
+        }
+        if (isset($data['meta_test_code'])) {
+            $shipping_options['meta_test_code'] = sanitize_text_field($data['meta_test_code']);
+        }
 
         $insert_data = array(
             'name' => isset($data['name']) ? sanitize_text_field($data['name']) : '',
@@ -150,6 +162,18 @@ class OP_CB_Bridge_Repository {
         }
         if (isset($data['velocity_hours'])) {
             $shipping_options['velocity_hours'] = intval($data['velocity_hours']);
+        }
+        if (isset($data['enable_meta_capi'])) {
+            $shipping_options['enable_meta_capi'] = !empty($data['enable_meta_capi']) ? 1 : 0;
+        }
+        if (isset($data['meta_pixel_id'])) {
+            $shipping_options['meta_pixel_id'] = sanitize_text_field($data['meta_pixel_id']);
+        }
+        if (isset($data['meta_access_token'])) {
+            $shipping_options['meta_access_token'] = sanitize_textarea_field($data['meta_access_token']);
+        }
+        if (isset($data['meta_test_code'])) {
+            $shipping_options['meta_test_code'] = sanitize_text_field($data['meta_test_code']);
         }
         $update_data['shipping_options'] = json_encode($shipping_options);
 
@@ -245,6 +269,10 @@ class OP_CB_Bridge_Repository {
         $row['phone_velocity_limit']  = isset($row['shipping_options']['phone_velocity_limit']) ? intval($row['shipping_options']['phone_velocity_limit']) : 1;
         $row['ip_velocity_limit']     = isset($row['shipping_options']['ip_velocity_limit']) ? intval($row['shipping_options']['ip_velocity_limit']) : 3;
         $row['velocity_hours']        = isset($row['shipping_options']['velocity_hours']) ? intval($row['shipping_options']['velocity_hours']) : 24;
+        $row['enable_meta_capi']       = !empty($row['shipping_options']['enable_meta_capi']) ? 1 : 0;
+        $row['meta_pixel_id']          = isset($row['shipping_options']['meta_pixel_id']) ? $row['shipping_options']['meta_pixel_id'] : '';
+        $row['meta_access_token']      = isset($row['shipping_options']['meta_access_token']) ? $row['shipping_options']['meta_access_token'] : '';
+        $row['meta_test_code']         = isset($row['shipping_options']['meta_test_code']) ? $row['shipping_options']['meta_test_code'] : '';
 
         return $row;
     }

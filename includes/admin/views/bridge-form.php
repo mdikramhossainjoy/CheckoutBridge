@@ -13,6 +13,10 @@ $op_cb_allowed_origins   = isset($op_cb_landing['allowed_origins'])   ? $op_cb_l
 $op_cb_assigned_products = isset($op_cb_landing['assigned_products']) ? $op_cb_landing['assigned_products'] : array();
 $op_cb_thank_you_url     = isset($op_cb_landing['thank_you_url'])     ? $op_cb_landing['thank_you_url']     : '';
 $op_cb_status            = isset($op_cb_landing['status'])            ? $op_cb_landing['status']            : 'active';
+$op_cb_enable_meta_capi  = !empty($op_cb_landing['enable_meta_capi']) ? 1 : 0;
+$op_cb_meta_pixel_id     = isset($op_cb_landing['meta_pixel_id'])     ? $op_cb_landing['meta_pixel_id']     : '';
+$op_cb_meta_access_token = isset($op_cb_landing['meta_access_token']) ? $op_cb_landing['meta_access_token'] : '';
+$op_cb_meta_test_code    = isset($op_cb_landing['meta_test_code'])    ? $op_cb_landing['meta_test_code']    : '';
 
 // Fetch WooCommerce Products with Lightweight Transient Caching for Instant Page Loading
 $op_cb_wc_products = array();
@@ -229,6 +233,99 @@ if (class_exists('WooCommerce')) {
                     </div>
                 </div>
 
+                <!-- ── Section 3: Meta Conversions API (CAPI) Integration ── -->
+                <div class="op-cb-card op-cb-mt-4">
+                    <div class="op-cb-card-header">
+                        <h2>
+                            <span class="op-cb-section-num">3</span>
+                            <i class="fa-brands fa-facebook" style="color:#1877f2;margin-right:6px;"></i>
+                            <?php esc_html_e('Meta (Facebook) Conversions API (CAPI)', 'op-checkoutbridge'); ?>
+                        </h2>
+                        <span class="op-cb-badge op-cb-badge-primary">
+                            <?php esc_html_e('Server-Side Tracking', 'op-checkoutbridge'); ?>
+                        </span>
+                    </div>
+                    <div class="op-cb-card-body">
+
+                        <!-- Enable CAPI Toggle -->
+                        <div class="op-cb-form-group">
+                            <label><?php esc_html_e('CAPI Server-Side Purchase Event', 'op-checkoutbridge'); ?></label>
+                            <div class="op-cb-toggle-row">
+                                <div>
+                                    <div class="op-cb-toggle-label"><?php esc_html_e('Fire Purchase Event on Processing Status', 'op-checkoutbridge'); ?></div>
+                                    <div class="op-cb-toggle-desc"><?php esc_html_e('Automatically dispatch a 100% SHA-256 hashed Purchase event directly to Meta Graph API when an order moves to Processing.', 'op-checkoutbridge'); ?></div>
+                                </div>
+                                <label class="op-cb-switch">
+                                    <input
+                                        type="checkbox"
+                                        id="op_cb_enable_meta_capi"
+                                        name="enable_meta_capi"
+                                        value="1"
+                                        <?php checked($op_cb_enable_meta_capi, 1); ?>
+                                    >
+                                    <span class="op-cb-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <hr class="op-cb-divider">
+
+                        <!-- Meta Pixel ID -->
+                        <div class="op-cb-form-group">
+                            <label for="op_cb_meta_pixel_id">
+                                <?php esc_html_e('Meta Dataset / Pixel ID', 'op-checkoutbridge'); ?>
+                            </label>
+                            <input
+                                type="text"
+                                id="op_cb_meta_pixel_id"
+                                name="meta_pixel_id"
+                                class="op-cb-input"
+                                value="<?php echo esc_attr($op_cb_meta_pixel_id); ?>"
+                                placeholder="e.g. 123456789012345"
+                            >
+                            <p class="op-cb-field-hint">
+                                <?php esc_html_e('Found in Facebook Events Manager > Data Sources > Settings.', 'op-checkoutbridge'); ?>
+                            </p>
+                        </div>
+
+                        <!-- Meta Conversions API Access Token -->
+                        <div class="op-cb-form-group">
+                            <label for="op_cb_meta_access_token">
+                                <?php esc_html_e('Conversions API Access Token', 'op-checkoutbridge'); ?>
+                            </label>
+                            <textarea
+                                id="op_cb_meta_access_token"
+                                name="meta_access_token"
+                                class="op-cb-textarea"
+                                rows="3"
+                                placeholder="EAAB..."
+                            ><?php echo esc_textarea($op_cb_meta_access_token); ?></textarea>
+                            <p class="op-cb-field-hint">
+                                <?php esc_html_e('Generate in Facebook Events Manager > Data Sources > Settings > Conversions API > "Generate access token".', 'op-checkoutbridge'); ?>
+                            </p>
+                        </div>
+
+                        <!-- Meta Test Event Code (Optional) -->
+                        <div class="op-cb-form-group">
+                            <label for="op_cb_meta_test_code">
+                                <?php esc_html_e('Test Event Code (Optional)', 'op-checkoutbridge'); ?>
+                            </label>
+                            <input
+                                type="text"
+                                id="op_cb_meta_test_code"
+                                name="meta_test_code"
+                                class="op-cb-input"
+                                value="<?php echo esc_attr($op_cb_meta_test_code); ?>"
+                                placeholder="e.g. TEST12345"
+                            >
+                            <p class="op-cb-field-hint">
+                                <?php esc_html_e('Use only during live testing. Found in Facebook Events Manager > Test Events tab. Leave blank in production.', 'op-checkoutbridge'); ?>
+                            </p>
+                        </div>
+
+                    </div>
+                </div>
+
             </div><!-- /op-cb-form-main -->
 
             <!-- ── Sidebar ── -->
@@ -236,7 +333,7 @@ if (class_exists('WooCommerce')) {
                 <div class="op-cb-card">
                     <div class="op-cb-card-header">
                         <h2>
-                            <span class="op-cb-section-num">3</span>
+                            <span class="op-cb-section-num">4</span>
                             <?php esc_html_e('Status & Token', 'op-checkoutbridge'); ?>
                         </h2>
                     </div>

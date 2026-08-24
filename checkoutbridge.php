@@ -34,6 +34,7 @@ require_once OP_CB_PATH . 'includes/class-op-cb-deactivator.php';
 require_once OP_CB_PATH . 'includes/class-op-cb-security.php';
 require_once OP_CB_PATH . 'includes/class-op-cb-bridge-repository.php';
 require_once OP_CB_PATH . 'includes/class-op-cb-order-engine.php';
+require_once OP_CB_PATH . 'includes/class-op-cb-meta-capi.php';
 require_once OP_CB_PATH . 'includes/api/class-op-cb-rest-controller.php';
 require_once OP_CB_PATH . 'includes/admin/class-op-cb-admin.php';
 
@@ -94,6 +95,7 @@ final class OP_CB_Plugin {
 
         // Initialize Core Components
         OP_CB_Security::init();
+        OP_CB_Meta_CAPI::init();
         OP_CB_REST_Controller::init();
 
         if (is_admin()) {

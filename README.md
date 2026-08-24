@@ -16,7 +16,7 @@
 - **Single Source of Truth**: All pricing calculations, inventory deductions, order creation logic, and status transitions occur securely inside WooCommerce.
 - **Multi-Product Payload Ingestion**: Supports single or multi-product item selections with individual quantity counters per product line item.
 - **Real-Time Dynamic Coupon Validator**: Dedicated `/validate-coupon` REST endpoint for real-time promo code validation and discount calculation before order submission.
-- **Meta (Facebook) Conversion CAPI**: Native High-Performance Order Storage (HPOS) metadata (`_op_cb_fbp`, `_op_cb_fbc`, `_op_cb_event_id`) and server-side tracking action hook for 100% Event Match Quality (EMQ).
+- **Server-Side Meta (Facebook) Conversions API (CAPI)**: Automatic server-to-server SHA-256 hashed `Purchase` event dispatch directly to Meta Graph API when orders transition to Processing status, with browser-server deduplication and native HPOS metadata (`_op_cb_fbp`, `_op_cb_fbc`, `_op_cb_event_id`).
 - **Global Dual-Shield Anti-Bot Defense**: E.164 international phone number normalization and Client IP velocity rate limiting to eliminate fake and spam COD orders.
 - **Stateless Signed Redirect Tokens**: Secure HMAC SHA-256 tokens for tamper-proof thank-you page receipt rendering without exposing sensitive order credentials.
 - **Shared Host & WAF Compatibility Shield**: Built-in Base64 payload decoding and custom headers to bypass aggressive host WAF filters (Imunify360, LiteSpeed, ModSecurity).
@@ -114,6 +114,25 @@ if (!empty($order_response['success'])) {
 - **HPOS Ready**: Full native compatibility with WooCommerce High-Performance Order Storage (HPOS).
 - **Sanitization & Escaping**: Strict input sanitization (`sanitize_text_field`, `sanitize_textarea_field`) and context-aware output escaping (`esc_html`, `esc_attr`, `esc_url`).
 - **CSRF & Nonce Protection**: All admin form submissions and query actions enforce cryptographic nonces and WordPress user capability checks.
+
+---
+
+## External Services
+
+This plugin can optionally connect to an external third-party service:
+
+### Meta (Facebook) Graph API / Conversions API
+* **What the service is and what it is used for**: When enabled by the site administrator in a Bridge Campaign, CheckoutBridge connects to the Meta (Facebook) Graph API (Conversions API) to send server-side `Purchase` events to track conversions, measure ad effectiveness, and attribute sales in Meta Ads Manager.
+* **What data is sent and when**: Data is only sent when the store administrator explicitly enables Meta Conversions API for a bridge campaign AND an order created through that bridge transitions to the `Processing` status. Data sent to `https://graph.facebook.com/` includes:
+  - Cryptographically hashed customer data (SHA-256): Customer email, normalized phone number (E.164), first name, last name, city, and 2-letter country code.
+  - Unhashed technical and tracking metadata: Customer IP address, browser user-agent string, Facebook click ID (`_fbc`), and Facebook browser ID (`_fbp`).
+  - Order details: Order currency, order total value, item product IDs, quantities, and unit prices.
+* **Service Provider**: Meta Platforms, Inc.
+* **Service Endpoint**: `https://graph.facebook.com/`
+* **Terms of Service and Privacy Policy**:
+  - [Meta Terms of Service](https://www.facebook.com/legal/terms)
+  - [Meta Commercial Terms / Business Tools Terms](https://www.facebook.com/legal/technology_terms)
+  - [Meta Privacy Policy](https://www.facebook.com/privacy/policy)
 
 ---
 
