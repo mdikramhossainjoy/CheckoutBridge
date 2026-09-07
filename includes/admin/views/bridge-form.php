@@ -12,6 +12,7 @@ $op_cb_token             = isset($op_cb_landing['token'])             ? $op_cb_l
 $op_cb_allowed_origins   = isset($op_cb_landing['allowed_origins'])   ? $op_cb_landing['allowed_origins']   : '';
 $op_cb_assigned_products = isset($op_cb_landing['assigned_products']) ? $op_cb_landing['assigned_products'] : array();
 $op_cb_thank_you_url     = isset($op_cb_landing['thank_you_url'])     ? $op_cb_landing['thank_you_url']     : '';
+$op_cb_enable_thank_you_url = isset($op_cb_landing['enable_thank_you_url']) ? (!empty($op_cb_landing['enable_thank_you_url']) ? 1 : 0) : ($op_cb_is_edit ? (!empty($op_cb_thank_you_url) ? 1 : 0) : 1);
 $op_cb_status            = isset($op_cb_landing['status'])            ? $op_cb_landing['status']            : 'active';
 $op_cb_enable_meta_capi  = !empty($op_cb_landing['enable_meta_capi']) ? 1 : 0;
 $op_cb_meta_pixel_id     = isset($op_cb_landing['meta_pixel_id'])     ? $op_cb_landing['meta_pixel_id']     : '';
@@ -118,8 +119,29 @@ if (class_exists('WooCommerce')) {
                             >
                         </div>
 
-                        <!-- Thank You URL -->
+                        <!-- Thank You Page Toggle -->
                         <div class="op-cb-form-group">
+                            <label><?php esc_html_e('Thank You Page Redirect', 'op-checkoutbridge'); ?></label>
+                            <div class="op-cb-toggle-row">
+                                <div>
+                                    <div class="op-cb-toggle-label"><?php esc_html_e('Redirect to Custom Thank You Page', 'op-checkoutbridge'); ?></div>
+                                    <div class="op-cb-toggle-desc"><?php esc_html_e('Enable to redirect buyers to an external page after checkout. Disable if your landing page displays order details in a modal or inline popup.', 'op-checkoutbridge'); ?></div>
+                                </div>
+                                <label class="op-cb-switch">
+                                    <input
+                                        type="checkbox"
+                                        id="op_cb_enable_thank_you_url"
+                                        name="enable_thank_you_url"
+                                        value="1"
+                                        <?php checked($op_cb_enable_thank_you_url, 1); ?>
+                                    >
+                                    <span class="op-cb-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Thank You URL Input (Conditional) -->
+                        <div class="op-cb-form-group" id="op_cb_thank_you_url_group" style="<?php echo empty($op_cb_enable_thank_you_url) ? 'display:none;' : ''; ?>">
                             <label for="op_cb_thank_you_url">
                                 <?php esc_html_e('Thank You Page URL', 'op-checkoutbridge'); ?>
                                 <span class="op-cb-required">*</span>
@@ -131,7 +153,7 @@ if (class_exists('WooCommerce')) {
                                 class="op-cb-input"
                                 value="<?php echo esc_attr($op_cb_thank_you_url); ?>"
                                 placeholder="https://landing.yourdomain.com/thank-you"
-                                required
+                                <?php echo !empty($op_cb_enable_thank_you_url) ? 'required' : ''; ?>
                             >
                             <p class="op-cb-field-hint">
                                 <?php esc_html_e('Customers are redirected here after successful order creation, with a signed token appended.', 'op-checkoutbridge'); ?>
@@ -159,18 +181,22 @@ if (class_exists('WooCommerce')) {
                 </div>
 
                 <!-- Products Selection Card -->
-                <div class="op-cb-card op-cb-mt-4">
+                <div class="op-cb-card">
                     <div class="op-cb-card-header">
-                        <h2>
-                            <span class="op-cb-section-num">2</span>
-                            <?php esc_html_e('Assigned WooCommerce Products', 'op-checkoutbridge'); ?>
-                        </h2>
-                        <span class="op-cb-header-badge">
-                            <?php esc_html_e('Used strictly for internal server-side payload validation. Assigned products are never exposed or fetchable over REST API.', 'op-checkoutbridge'); ?>
-                        </span>
-                        <span class="op-cb-counter-pill" id="op_cb_selected_counter">
-                            0 <?php esc_html_e('selected', 'op-checkoutbridge'); ?>
-                        </span>
+                        <div class="op-cb-card-header-left">
+                            <h2>
+                                <span class="op-cb-section-num">2</span>
+                                <?php esc_html_e('Assigned WooCommerce Products', 'op-checkoutbridge'); ?>
+                            </h2>
+                            <p class="op-cb-card-subtitle">
+                                <?php esc_html_e('Used strictly for internal server-side payload validation. Assigned products are never exposed or fetchable over REST API.', 'op-checkoutbridge'); ?>
+                            </p>
+                        </div>
+                        <div class="op-cb-card-header-right">
+                            <span class="op-cb-counter-pill" id="op_cb_selected_counter">
+                                0 <?php esc_html_e('selected', 'op-checkoutbridge'); ?>
+                            </span>
+                        </div>
                     </div>
                     <div class="op-cb-card-body">
 
@@ -234,7 +260,7 @@ if (class_exists('WooCommerce')) {
                 </div>
 
                 <!-- ── Section 3: Meta Conversions API (CAPI) Integration ── -->
-                <div class="op-cb-card op-cb-mt-4">
+                <div class="op-cb-card">
                     <div class="op-cb-card-header">
                         <h2>
                             <span class="op-cb-section-num">3</span>

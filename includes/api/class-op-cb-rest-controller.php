@@ -327,15 +327,18 @@ class OP_CB_REST_Controller {
 
             $order_id = $order_result->get_id();
 
-            // Generate Signed Token for Redirect
-            $signed_token = OP_CB_Security::generate_signed_token($order_id, $landing['token']);
-            $thank_you_url = !empty($landing['thank_you_url']) ? $landing['thank_you_url'] : '';
+            // Generate Signed Token for Redirect / Modal Verification
+            $signed_token        = OP_CB_Security::generate_signed_token($order_id, $landing['token']);
+            $is_redirect_enabled = !empty($landing['enable_thank_you_url']) && !empty($landing['thank_you_url']);
+            $thank_you_url       = $is_redirect_enabled ? $landing['thank_you_url'] : '';
 
             return new WP_REST_Response(array(
                 'success'  => true,
+                'order_id' => $order_id,
                 'redirect' => array(
-                    'url'   => $thank_you_url,
-                    'token' => $signed_token
+                    'enabled' => (bool) $is_redirect_enabled,
+                    'url'     => $thank_you_url,
+                    'token'   => $signed_token
                 )
             ), 201);
 

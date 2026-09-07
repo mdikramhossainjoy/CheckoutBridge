@@ -101,6 +101,11 @@ class OP_CB_Bridge_Repository {
         if (isset($data['enable_meta_capi'])) {
             $shipping_options['enable_meta_capi'] = !empty($data['enable_meta_capi']) ? 1 : 0;
         }
+        if (isset($data['enable_thank_you_url'])) {
+            $shipping_options['enable_thank_you_url'] = !empty($data['enable_thank_you_url']) ? 1 : 0;
+        } else {
+            $shipping_options['enable_thank_you_url'] = !empty($data['thank_you_url']) ? 1 : 0;
+        }
         if (isset($data['meta_pixel_id'])) {
             $shipping_options['meta_pixel_id'] = sanitize_text_field($data['meta_pixel_id']);
         }
@@ -165,6 +170,9 @@ class OP_CB_Bridge_Repository {
         }
         if (isset($data['enable_meta_capi'])) {
             $shipping_options['enable_meta_capi'] = !empty($data['enable_meta_capi']) ? 1 : 0;
+        }
+        if (isset($data['enable_thank_you_url'])) {
+            $shipping_options['enable_thank_you_url'] = !empty($data['enable_thank_you_url']) ? 1 : 0;
         }
         if (isset($data['meta_pixel_id'])) {
             $shipping_options['meta_pixel_id'] = sanitize_text_field($data['meta_pixel_id']);
@@ -270,6 +278,9 @@ class OP_CB_Bridge_Repository {
         $row['ip_velocity_limit']     = isset($row['shipping_options']['ip_velocity_limit']) ? intval($row['shipping_options']['ip_velocity_limit']) : 3;
         $row['velocity_hours']        = isset($row['shipping_options']['velocity_hours']) ? intval($row['shipping_options']['velocity_hours']) : 24;
         $row['enable_meta_capi']       = !empty($row['shipping_options']['enable_meta_capi']) ? 1 : 0;
+        $row['enable_thank_you_url']   = isset($row['shipping_options']['enable_thank_you_url']) 
+            ? (int) $row['shipping_options']['enable_thank_you_url'] 
+            : (!empty($row['thank_you_url']) ? 1 : 0);
         $row['meta_pixel_id']          = isset($row['shipping_options']['meta_pixel_id']) ? $row['shipping_options']['meta_pixel_id'] : '';
         $row['meta_access_token']      = isset($row['shipping_options']['meta_access_token']) ? $row['shipping_options']['meta_access_token'] : '';
         $row['meta_test_code']         = isset($row['shipping_options']['meta_test_code']) ? $row['shipping_options']['meta_test_code'] : '';

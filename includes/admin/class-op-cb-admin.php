@@ -214,7 +214,8 @@ class OP_CB_Admin {
         $name       = isset($_POST['name']) ? sanitize_text_field(wp_unslash($_POST['name'])) : '';
         $token      = !empty($_POST['token']) ? sanitize_text_field(wp_unslash($_POST['token'])) : OP_CB_Bridge_Repository::generate_token();
         $origins    = isset($_POST['allowed_origins']) ? sanitize_textarea_field(wp_unslash($_POST['allowed_origins'])) : '';
-        $thank_you  = isset($_POST['thank_you_url']) ? esc_url_raw(wp_unslash($_POST['thank_you_url'])) : '';
+        $enable_thank_you = !empty($_POST['enable_thank_you_url']) ? 1 : 0;
+        $thank_you        = ($enable_thank_you && isset($_POST['thank_you_url'])) ? esc_url_raw(wp_unslash($_POST['thank_you_url'])) : '';
         $raw_status = isset($_POST['status']) ? sanitize_key(wp_unslash($_POST['status'])) : 'active';
         $status     = in_array($raw_status, array('active', 'inactive'), true) ? $raw_status : 'active';
 
@@ -255,6 +256,7 @@ class OP_CB_Admin {
             'meta_pixel_id'        => $meta_pixel_id,
             'meta_access_token'    => $meta_access_token,
             'meta_test_code'       => $meta_test_code,
+            'enable_thank_you_url' => $enable_thank_you,
             'thank_you_url'        => $thank_you,
             'status'               => $status
         );

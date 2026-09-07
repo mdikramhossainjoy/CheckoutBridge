@@ -7,7 +7,7 @@ Requires PHP: 7.4
 Requires Plugins: woocommerce
 WC requires at least: 5.0
 WC tested up to: 9.3
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -67,6 +67,13 @@ This plugin can optionally connect to an external third-party service:
   - Meta Privacy Policy: https://www.facebook.com/privacy/policy
 
 == Changelog ==
+
+= 1.0.1 =
+* UI: Unified global section gaps and standardized border-radius system across all admin cards, forms, and buttons.
+* UI: Restructured Assigned WooCommerce Products card header into a clean two-line layout with description beneath the title.
+* UI: Centered the Bridges Manager empty state with generous vertical padding and centered action button.
+* Feature: Added an optional toggle for Thank You Page Redirect in Bridge Settings, enabling seamless modal/inline confirmation workflows without redirecting.
+* API: Enhanced `/create-order` endpoint to return `redirect.enabled: false` when redirect is disabled.
 
 = 1.0.0 =
 * Initial official release of CheckoutBridge.

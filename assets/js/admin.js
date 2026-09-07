@@ -146,6 +146,21 @@ jQuery(document).ready(function ($) {
     }
   });
 
+  /* ── 2.2 Thank You Page URL Toggle ─────────────────────────────── */
+  $(document).on('change', '#op_cb_enable_thank_you_url', function () {
+    var isEnabled = $(this).is(':checked');
+    var $group    = $('#op_cb_thank_you_url_group');
+    var $input    = $('#op_cb_thank_you_url');
+
+    if (isEnabled) {
+      $group.slideDown(200);
+      $input.prop('required', true);
+    } else {
+      $group.slideUp(200);
+      $input.prop('required', false);
+    }
+  });
+
   /* ── 3. Code Block Copy ─────────────────────────────────────────── */
   $(document).on('click', '.op-cb-btn-copy-code', function (e) {
     e.preventDefault();

@@ -93,10 +93,13 @@ $op_cb_bridges = OP_CB_Bridge_Repository::get_all();
                                 ? mb_strimwidth($op_cb_raw_name, 0, 26, '…')
                                 : (strlen($op_cb_raw_name) > 26 ? substr($op_cb_raw_name, 0, 26) . '…' : $op_cb_raw_name);
 
-                            $op_cb_raw_ty_url       = !empty($op_cb_l['thank_you_url']) ? $op_cb_l['thank_you_url'] : '-';
-                            $op_cb_truncated_ty_url = (function_exists('mb_strimwidth'))
-                                ? mb_strimwidth($op_cb_raw_ty_url, 0, 26, '…')
-                                : (strlen($op_cb_raw_ty_url) > 26 ? substr($op_cb_raw_ty_url, 0, 26) . '…' : $op_cb_raw_ty_url);
+                            $op_cb_is_ty_enabled    = !empty($op_cb_l['enable_thank_you_url']) && !empty($op_cb_l['thank_you_url']);
+                            $op_cb_raw_ty_url       = $op_cb_is_ty_enabled ? $op_cb_l['thank_you_url'] : '';
+                            $op_cb_truncated_ty_url = $op_cb_is_ty_enabled
+                                ? ((function_exists('mb_strimwidth'))
+                                    ? mb_strimwidth($op_cb_raw_ty_url, 0, 26, '…')
+                                    : (strlen($op_cb_raw_ty_url) > 26 ? substr($op_cb_raw_ty_url, 0, 26) . '…' : $op_cb_raw_ty_url))
+                                : '';
                         ?>
                             <tr data-status="<?php echo esc_attr($op_cb_l['status']); ?>">
 
@@ -128,9 +131,16 @@ $op_cb_bridges = OP_CB_Bridge_Repository::get_all();
                                 </td>
 
                                 <td>
-                                    <span class="op-cb-truncate">
-                                        <?php echo esc_html($op_cb_truncated_ty_url); ?>
-                                    </span>
+                                    <?php if ($op_cb_is_ty_enabled) : ?>
+                                        <span class="op-cb-truncate" title="<?php echo esc_attr($op_cb_raw_ty_url); ?>">
+                                            <?php echo esc_html($op_cb_truncated_ty_url); ?>
+                                        </span>
+                                    <?php else : ?>
+                                        <span class="op-cb-badge op-cb-badge-secondary">
+                                            <i class="fa-solid fa-window-maximize" style="font-size:10px;margin-right:3px;"></i>
+                                            <?php esc_html_e('Modal / Inline', 'op-checkoutbridge'); ?>
+                                        </span>
+                                    <?php endif; ?>
                                 </td>
 
                                 <td>

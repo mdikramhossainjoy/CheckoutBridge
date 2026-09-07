@@ -90,7 +90,7 @@ $op_cb_rest_url  = esc_url_raw(rest_url('checkoutbridge/v1/'));
     </div>
 
     <!-- ── System Status ── -->
-    <div class="op-cb-card op-cb-mt-4">
+    <div class="op-cb-card">
         <div class="op-cb-card-header">
             <h2>
                 <i class="fa-solid fa-shield-halved"></i>

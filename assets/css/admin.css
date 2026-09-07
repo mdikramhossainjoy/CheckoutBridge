@@ -57,11 +57,11 @@
   --cb-text-400:   #94a3b8;
   --cb-text-300:   rgba(15, 23, 42, 0.08);
 
-  /* Radius */
-  --cb-r-sm:  6px;
-  --cb-r-md:  10px;
-  --cb-r-lg:  14px;
-  --cb-r-xl:  20px;
+  /* Radius — Strict Unified System */
+  --cb-r-sm:   6px;
+  --cb-r-md:   8px;
+  --cb-r-lg:   12px;
+  --cb-r-xl:   16px;
   --cb-r-pill: 9999px;
 
   /* Font */
@@ -263,6 +263,36 @@ body[class*="checkoutbridge"] #wpfooter {
   align-items: start;
 }
 
+/* ── Form Layout (Strict Unified 20px Grid & Gaps) ─────────────────────────── */
+.op-cb-form-layout {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) 340px !important;
+  gap: 20px !important;
+  align-items: start !important;
+  width: 100% !important;
+}
+
+/* Form main column */
+.op-cb-form-main {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 20px !important;
+  min-width: 0 !important;
+}
+
+/* Sticky sidebar */
+.op-cb-form-sidebar {
+  align-self: start !important;
+  min-width: 0 !important;
+}
+
+.op-cb-form-sidebar > .op-cb-card {
+  position: sticky !important;
+  top: 48px !important;
+  z-index: 20 !important;
+  margin-bottom: 0 !important;
+}
+
 /* ── Cards ──────────────────────────────────────────────────────────────────── */
 .op-cb-card {
   background: var(--cb-surface);
@@ -272,10 +302,13 @@ body[class*="checkoutbridge"] #wpfooter {
   width: 100% !important;
   max-width: 100% !important;
   box-sizing: border-box !important;
-  margin-bottom: 1em !important;
+  margin-bottom: 20px;
   transition: border-color 180ms ease;
 }
 
+.op-cb-form-main > .op-cb-card,
+.op-cb-form-sidebar > .op-cb-card,
+.op-cb-grid > .op-cb-card,
 .op-cb-card:last-child {
   margin-bottom: 0 !important;
 }
@@ -288,12 +321,34 @@ body[class*="checkoutbridge"] #wpfooter {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 20px;
+  padding: 16px 22px;
   border-bottom: 1px solid var(--cb-border);
   background: var(--cb-surface-2);
   border-top-left-radius: var(--cb-r-lg) !important;
   border-top-right-radius: var(--cb-r-lg) !important;
-  gap: 12px;
+  gap: 14px;
+}
+
+.op-cb-card-header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.op-cb-card-header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.op-cb-card-subtitle {
+  font-size: clamp(11.5px, 1.3vw, 12.5px);
+  color: var(--cb-text-500);
+  margin: 0;
+  line-height: 1.45;
+  font-weight: 400;
 }
 
 .op-cb-card-header h2 {
@@ -308,7 +363,7 @@ body[class*="checkoutbridge"] #wpfooter {
 }
 
 .op-cb-card-body {
-  padding: 20px;
+  padding: 22px 24px;
 }
 
 .op-cb-card-body.op-cb-p-0 {
@@ -316,29 +371,9 @@ body[class*="checkoutbridge"] #wpfooter {
 }
 
 .op-cb-card-footer {
-  padding: 14px 20px;
+  padding: 16px 24px;
   background: var(--cb-surface-2);
   border-top: 1px solid var(--cb-border);
-}
-
-/* Sticky sidebar */
-.op-cb-form-sidebar {
-  align-self: start !important;
-  height: 100% !important;
-}
-
-.op-cb-form-sidebar > .op-cb-card {
-  position: sticky !important;
-  top: 48px !important;
-  z-index: 20 !important;
-}
-
-/* Form main column */
-.op-cb-form-main {
-  display: flex;
-  flex-direction: column;
-  gap: 16px !important;
-  min-width: 0;
 }
 
 /* ── Stat Cards (Clean Minimal, Zero Bold Left Border) ──────────────────────── */
@@ -1677,42 +1712,58 @@ body[class*="checkoutbridge"] #wpfooter {
   color: var(--cb-indigo-600);
 }
 
-/* ── Empty State ────────────────────────────────────────────────────────────── */
+/* ── Empty State (Bridges List & Dashboards — Centered & Spaced) ──────────── */
+.op-cb-empty-state,
 .op-cb-empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  padding: 52px 24px;
-  gap: 12px;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  padding: 60px 24px !important;
+  gap: 14px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
 }
 
-.op-cb-empty-icon {
-  width: 52px;
-  height: 52px;
-  border-radius: var(--cb-r-xl);
-  background: var(--cb-surface-2);
-  border: 1px solid var(--cb-border-2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--cb-text-400);
+.op-cb-empty-state .op-cb-empty-icon,
+.op-cb-empty .op-cb-empty-icon {
+  width: 56px !important;
+  height: 56px !important;
+  border-radius: var(--cb-r-md) !important;
+  background: var(--cb-indigo-50) !important;
+  border: 1px solid var(--cb-indigo-200) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: var(--cb-indigo-600) !important;
+  font-size: 22px !important;
+  margin-bottom: 2px !important;
 }
 
+.op-cb-empty-state h3,
 .op-cb-empty h3 {
-  font-family: var(--cb-font-display);
-  font-size: clamp(14.5px, 1.8vw, 16px);
-  font-weight: 700;
-  color: var(--cb-text-900);
-  margin: 0;
+  font-family: var(--cb-font-display) !important;
+  font-size: clamp(15px, 2vw, 17px) !important;
+  font-weight: 700 !important;
+  color: var(--cb-text-900) !important;
+  margin: 0 !important;
+  text-align: center !important;
 }
 
+.op-cb-empty-state p,
 .op-cb-empty p {
-  font-size: clamp(12px, 1.4vw, 13.5px);
-  color: var(--cb-text-500);
-  margin: 0;
-  max-width: 380px;
-  line-height: 1.6;
+  font-size: clamp(12.5px, 1.4vw, 13.5px) !important;
+  color: var(--cb-text-500) !important;
+  margin: 0 auto !important;
+  max-width: 440px !important;
+  line-height: 1.6 !important;
+  text-align: center !important;
+}
+
+.op-cb-empty-state .button,
+.op-cb-empty .button {
+  margin-top: 6px !important;
 }
 
 /* ── Toast Notification Animation ──────────────────────────────────────────── */
@@ -1995,8 +2046,10 @@ body.op-cb-modal-open {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   }
   .op-cb-grid-2,
-  .op-cb-grid-main {
+  .op-cb-grid-main,
+  .op-cb-form-layout {
     grid-template-columns: minmax(0, 1fr) !important;
+    gap: 20px !important;
   }
   .op-cb-form-sidebar {
     align-self: stretch !important;
@@ -2004,6 +2057,7 @@ body.op-cb-modal-open {
   }
   .op-cb-form-sidebar > .op-cb-card {
     position: static !important;
+    margin-top: 0 !important;
   }
   .op-cb-product-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr)) !important;

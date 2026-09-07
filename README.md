@@ -136,6 +136,23 @@ This plugin can optionally connect to an external third-party service:
 
 ---
 
+## Changelog
+
+### v1.0.1
+* **UI Spacing & Gaps**: Unified global section gaps and standardized border-radius system across all admin cards, forms, and buttons.
+* **Header Layout**: Restructured Assigned WooCommerce Products card header into a clean two-line layout with description beneath the title and selected counter pill on the right.
+* **Centered Empty State**: Centered the Bridges Manager empty state with generous vertical padding and centered action button.
+* **Optional Thank You Page URL**: Added an optional toggle for Thank You Page Redirect in Bridge Settings, enabling seamless modal/inline confirmation workflows without redirecting.
+* **REST API**: Enhanced `/create-order` endpoint to return `redirect.enabled: false` when redirect is disabled.
+
+### v1.0.0
+* Initial official release of CheckoutBridge.
+* Real-time coupon validator endpoint (`/validate-coupon`).
+* Meta CAPI server-side conversion tracking helper.
+* Global Dual-Shield Anti-Bot velocity limits.
+
+---
+
 ## License
 
 Distributed under the **GPLv2 or later** License. See `README.txt` for details.
