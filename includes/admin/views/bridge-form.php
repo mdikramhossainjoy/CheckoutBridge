@@ -18,6 +18,11 @@ $op_cb_enable_meta_capi  = !empty($op_cb_landing['enable_meta_capi']) ? 1 : 0;
 $op_cb_meta_pixel_id     = isset($op_cb_landing['meta_pixel_id'])     ? $op_cb_landing['meta_pixel_id']     : '';
 $op_cb_meta_access_token = isset($op_cb_landing['meta_access_token']) ? $op_cb_landing['meta_access_token'] : '';
 $op_cb_meta_test_code    = isset($op_cb_landing['meta_test_code'])    ? $op_cb_landing['meta_test_code']    : '';
+$op_cb_enable_quantity_pricing = !empty($op_cb_landing['enable_quantity_pricing']) ? 1 : 0;
+$op_cb_quantity_pricing_tiers  = (isset($op_cb_landing['quantity_pricing_tiers']) && is_array($op_cb_landing['quantity_pricing_tiers']))
+    ? $op_cb_landing['quantity_pricing_tiers']
+    : array();
+$op_cb_currency_symbol         = function_exists('get_woocommerce_currency_symbol') ? get_woocommerce_currency_symbol() : '$';
 
 // Fetch WooCommerce Products with Lightweight Transient Caching for Instant Page Loading
 $op_cb_wc_products = array();
@@ -259,11 +264,119 @@ if (class_exists('WooCommerce')) {
                     </div>
                 </div>
 
-                <!-- ── Section 3: Meta Conversions API (CAPI) Integration ── -->
+                <!-- ── Section 3: Quantity Package Deals ── -->
+                <div class="op-cb-card" id="op_cb_package_pricing_card">
+                    <div class="op-cb-card-header">
+                        <div class="op-cb-card-header-left">
+                            <h2>
+                                <span class="op-cb-section-num">3</span>
+                                <i class="fa-solid fa-boxes-stacked" style="color:var(--cb-indigo-600);margin-right:6px;"></i>
+                                <?php esc_html_e('Quantity Package Deals', 'op-checkoutbridge'); ?>
+                            </h2>
+                            <p class="op-cb-card-subtitle">
+                                <?php esc_html_e('Set fixed bundle prices for specific product quantities. Each deal generates a Unique ID for your landing page payload.', 'op-checkoutbridge'); ?>
+                            </p>
+                        </div>
+                        <div class="op-cb-card-header-right">
+                            <label class="op-cb-switch">
+                                <input
+                                    type="checkbox"
+                                    id="op_cb_enable_quantity_pricing"
+                                    name="enable_quantity_pricing"
+                                    value="1"
+                                    <?php checked($op_cb_enable_quantity_pricing, 1); ?>
+                                >
+                                <span class="op-cb-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="op-cb-card-body" id="op_cb_quantity_pricing_body" style="<?php echo empty($op_cb_enable_quantity_pricing) ? 'display:none;' : ''; ?>">
+                        <div class="op-cb-package-tiers-table-wrap">
+                            <table class="op-cb-package-tiers-table" id="op_cb_package_tiers_table">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 130px;"><?php esc_html_e('Min Quantity', 'op-checkoutbridge'); ?></th>
+                                        <th style="width: 170px;"><?php esc_html_e('Package Price', 'op-checkoutbridge'); ?> (<?php echo esc_html($op_cb_currency_symbol); ?>)</th>
+                                        <th><?php esc_html_e('Unique Deal ID', 'op-checkoutbridge'); ?></th>
+                                        <th style="width: 50px; text-align: center;"><?php esc_html_e('Action', 'op-checkoutbridge'); ?></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="op_cb_package_tiers_tbody">
+                                    <?php if (!empty($op_cb_quantity_pricing_tiers)) : ?>
+                                        <?php foreach ($op_cb_quantity_pricing_tiers as $op_cb_idx => $op_cb_tier) :
+                                            $op_cb_t_qty   = isset($op_cb_tier['quantity']) ? intval($op_cb_tier['quantity']) : 2;
+                                            $op_cb_t_price = isset($op_cb_tier['price']) ? floatval($op_cb_tier['price']) : 0;
+                                            $op_cb_t_id    = !empty($op_cb_tier['tier_id']) ? sanitize_key($op_cb_tier['tier_id']) : ('tier_' . substr(md5(uniqid(wp_rand(), true)), 0, 6));
+                                        ?>
+                                            <tr class="op-cb-tier-row" data-index="<?php echo esc_attr($op_cb_idx); ?>">
+                                                <td>
+                                                    <input
+                                                        type="number"
+                                                        name="quantity_pricing_tiers[<?php echo esc_attr($op_cb_idx); ?>][quantity]"
+                                                        class="op-cb-input op-cb-tier-qty"
+                                                        min="1"
+                                                        max="999"
+                                                        value="<?php echo esc_attr($op_cb_t_qty); ?>"
+                                                        required
+                                                    >
+                                                </td>
+                                                <td>
+                                                    <div class="op-cb-price-input-wrap">
+                                                        <span class="op-cb-price-symbol"><?php echo esc_html($op_cb_currency_symbol); ?></span>
+                                                        <input
+                                                            type="number"
+                                                            step="any"
+                                                            min="0"
+                                                            name="quantity_pricing_tiers[<?php echo esc_attr($op_cb_idx); ?>][price]"
+                                                            class="op-cb-input op-cb-tier-price"
+                                                            value="<?php echo esc_attr($op_cb_t_price); ?>"
+                                                            placeholder="0.00"
+                                                            required
+                                                        >
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="op-cb-tier-id-cell">
+                                                        <input
+                                                            type="text"
+                                                            name="quantity_pricing_tiers[<?php echo esc_attr($op_cb_idx); ?>][tier_id]"
+                                                            class="op-cb-input op-cb-tier-id-input"
+                                                            value="<?php echo esc_attr($op_cb_t_id); ?>"
+                                                            readonly
+                                                        >
+                                                        <button type="button" class="op-cb-btn-icon op-cb-btn-copy-tier" data-tier-id="<?php echo esc_attr($op_cb_t_id); ?>" title="<?php esc_attr_e('Copy Deal ID', 'op-checkoutbridge'); ?>">
+                                                            <i class="fa-solid fa-copy"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                                <td style="text-align:center;">
+                                                    <button type="button" class="op-cb-btn-icon op-cb-btn-delete-tier" title="<?php esc_attr_e('Remove Deal', 'op-checkoutbridge'); ?>" style="color:var(--cb-danger-600);">
+                                                        <i class="fa-solid fa-trash-can"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="op-cb-package-tiers-actions">
+                            <button type="button" id="op_cb_add_tier_btn" class="button button-secondary">
+                                <i class="fa-solid fa-plus" style="margin-right:4px;"></i>
+                                <?php esc_html_e('Add Package Deal', 'op-checkoutbridge'); ?>
+                            </button>
+                            <span class="op-cb-field-hint" style="display:inline-block;margin-left:12px;">
+                                <?php esc_html_e('Send this Unique Deal ID as "tier_id" in your /create-order payload.', 'op-checkoutbridge'); ?>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ── Section 4: Meta Conversions API (CAPI) Integration ── -->
                 <div class="op-cb-card">
                     <div class="op-cb-card-header">
                         <h2>
-                            <span class="op-cb-section-num">3</span>
+                            <span class="op-cb-section-num">4</span>
                             <i class="fa-brands fa-facebook" style="color:#1877f2;margin-right:6px;"></i>
                             <?php esc_html_e('Meta (Facebook) Conversions API (CAPI)', 'op-checkoutbridge'); ?>
                         </h2>
@@ -359,7 +472,7 @@ if (class_exists('WooCommerce')) {
                 <div class="op-cb-card">
                     <div class="op-cb-card-header">
                         <h2>
-                            <span class="op-cb-section-num">4</span>
+                            <span class="op-cb-section-num">5</span>
                             <?php esc_html_e('Status & Token', 'op-checkoutbridge'); ?>
                         </h2>
                     </div>

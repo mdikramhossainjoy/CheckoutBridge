@@ -111,13 +111,6 @@ class OP_CB_REST_Controller {
             'callback'            => array(__CLASS__, 'health_check_handler'),
             'permission_callback' => '__return_true'
         ));
-
-        // Endpoint 4: Validate Coupon / Promo Code (POST)
-        register_rest_route(self::NAMESPACE, '/validate-coupon', array(
-            'methods'             => \WP_REST_Server::CREATABLE,
-            'callback'            => array(__CLASS__, 'validate_coupon_handler'),
-            'permission_callback' => '__return_true'
-        ));
     }
 
     /**
@@ -200,14 +193,16 @@ class OP_CB_REST_Controller {
             );
         }
 
-        // 8. Coupon Code Extraction & Normalization
-        $coupon_code = '';
-        if (!empty($params['coupon_code'])) {
-            $coupon_code = sanitize_text_field($params['coupon_code']);
-        } elseif (!empty($params['coupon'])) {
-            $coupon_code = sanitize_text_field($params['coupon']);
+        // 8. Package Deal Tier ID Extraction & Normalization
+        $tier_id = '';
+        if (!empty($params['tier_id'])) {
+            $tier_id = sanitize_key($params['tier_id']);
+        } elseif (!empty($params['deal_id'])) {
+            $tier_id = sanitize_key($params['deal_id']);
+        } elseif (!empty($params['package_id'])) {
+            $tier_id = sanitize_key($params['package_id']);
         }
-        $params['coupon_code'] = $coupon_code;
+        $params['tier_id'] = $tier_id;
 
         return $params;
     }
@@ -325,7 +320,9 @@ class OP_CB_REST_Controller {
                 ), $status_code);
             }
 
-            $order_id = $order_result->get_id();
+            $order_id   = $order_result->get_id();
+            $order_type = $order_result->get_meta('_op_cb_order_type') ?: 'normal';
+            $tier_id    = $order_result->get_meta('_op_cb_tier_id') ?: '';
 
             // Generate Signed Token for Redirect / Modal Verification
             $signed_token        = OP_CB_Security::generate_signed_token($order_id, $landing['token']);
@@ -333,9 +330,11 @@ class OP_CB_REST_Controller {
             $thank_you_url       = $is_redirect_enabled ? $landing['thank_you_url'] : '';
 
             return new WP_REST_Response(array(
-                'success'  => true,
-                'order_id' => $order_id,
-                'redirect' => array(
+                'success'    => true,
+                'order_id'   => $order_id,
+                'order_type' => $order_type,
+                'tier_id'    => $tier_id,
+                'redirect'   => array(
                     'enabled' => (bool) $is_redirect_enabled,
                     'url'     => $thank_you_url,
                     'token'   => $signed_token
@@ -398,67 +397,6 @@ class OP_CB_REST_Controller {
         }
 
         return new WP_REST_Response($details, 200);
-    }
-
-    /**
-     * Route Handler: POST /validate-coupon
-     */
-    public static function validate_coupon_handler($request) {
-        // Rate limiting: 30 requests per 60 seconds per IP
-        $client_ip = self::get_client_ip();
-        if (!OP_CB_Security::check_rate_limit('val_coupon_' . $client_ip, 30, 60)) {
-            return new WP_REST_Response(array(
-                'success' => false,
-                'valid'   => false,
-                'error'   => 'rate_limited',
-                'message' => __('Too many requests. Please try again shortly.', 'op-checkoutbridge')
-            ), 429);
-        }
-
-        $params = self::extract_request_params($request);
-
-        $bridge_token = !empty($params['bridge_token']) ? sanitize_text_field($params['bridge_token']) : '';
-        if (empty($bridge_token)) {
-            return new WP_REST_Response(array(
-                'success' => false,
-                'valid'   => false,
-                'error'   => 'missing_bridge_token',
-                'message' => __('Bridge token is required.', 'op-checkoutbridge')
-            ), 400);
-        }
-
-        $landing = OP_CB_Bridge_Repository::get_by_token($bridge_token);
-        if (!$landing) {
-            return new WP_REST_Response(array(
-                'success' => false,
-                'valid'   => false,
-                'error'   => 'invalid_bridge_token',
-                'message' => __('Invalid or unknown bridge token.', 'op-checkoutbridge')
-            ), 404);
-        }
-
-        $coupon_code = isset($params['coupon_code']) ? sanitize_text_field($params['coupon_code']) : (isset($params['coupon']) ? sanitize_text_field($params['coupon']) : '');
-        if (empty($coupon_code)) {
-            return new WP_REST_Response(array(
-                'success' => false,
-                'valid'   => false,
-                'error'   => 'missing_coupon',
-                'message' => __('Coupon code is required.', 'op-checkoutbridge')
-            ), 400);
-        }
-
-        $result = OP_CB_Order_Engine::validate_coupon_code($landing, $coupon_code, $params);
-
-        if (is_wp_error($result)) {
-            return new WP_REST_Response(array(
-                'success' => false,
-                'valid'   => false,
-                'error'   => $result->get_error_code(),
-                'message' => $result->get_error_message()
-            ), 400);
-        }
-
-        return new WP_REST_Response($result, 200);
     }
 
     /**

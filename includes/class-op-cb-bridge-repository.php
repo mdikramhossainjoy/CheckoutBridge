@@ -115,6 +115,12 @@ class OP_CB_Bridge_Repository {
         if (isset($data['meta_test_code'])) {
             $shipping_options['meta_test_code'] = sanitize_text_field($data['meta_test_code']);
         }
+        if (isset($data['enable_quantity_pricing'])) {
+            $shipping_options['enable_quantity_pricing'] = !empty($data['enable_quantity_pricing']) ? 1 : 0;
+        }
+        if (isset($data['quantity_pricing_tiers']) && is_array($data['quantity_pricing_tiers'])) {
+            $shipping_options['quantity_pricing_tiers'] = $data['quantity_pricing_tiers'];
+        }
 
         $insert_data = array(
             'name' => isset($data['name']) ? sanitize_text_field($data['name']) : '',
@@ -182,6 +188,12 @@ class OP_CB_Bridge_Repository {
         }
         if (isset($data['meta_test_code'])) {
             $shipping_options['meta_test_code'] = sanitize_text_field($data['meta_test_code']);
+        }
+        if (isset($data['enable_quantity_pricing'])) {
+            $shipping_options['enable_quantity_pricing'] = !empty($data['enable_quantity_pricing']) ? 1 : 0;
+        }
+        if (isset($data['quantity_pricing_tiers']) && is_array($data['quantity_pricing_tiers'])) {
+            $shipping_options['quantity_pricing_tiers'] = $data['quantity_pricing_tiers'];
         }
         $update_data['shipping_options'] = json_encode($shipping_options);
 
@@ -284,6 +296,10 @@ class OP_CB_Bridge_Repository {
         $row['meta_pixel_id']          = isset($row['shipping_options']['meta_pixel_id']) ? $row['shipping_options']['meta_pixel_id'] : '';
         $row['meta_access_token']      = isset($row['shipping_options']['meta_access_token']) ? $row['shipping_options']['meta_access_token'] : '';
         $row['meta_test_code']         = isset($row['shipping_options']['meta_test_code']) ? $row['shipping_options']['meta_test_code'] : '';
+        $row['enable_quantity_pricing'] = !empty($row['shipping_options']['enable_quantity_pricing']) ? 1 : 0;
+        $row['quantity_pricing_tiers']  = (isset($row['shipping_options']['quantity_pricing_tiers']) && is_array($row['shipping_options']['quantity_pricing_tiers']))
+            ? $row['shipping_options']['quantity_pricing_tiers']
+            : array();
 
         return $row;
     }

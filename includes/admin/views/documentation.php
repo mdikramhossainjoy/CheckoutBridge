@@ -194,7 +194,7 @@ $op_cb_site_rest_url = esc_url_raw(rest_url('checkoutbridge/v1/'));
         { id: 14, quantity: 2 },
         { id: 20, quantity: 1 }
       ],
-      coupon_code: 'FLASH50', // Optional WooCommerce Promo Coupon Code
+      tier_id: 'tier_6a1f8b', // Optional Quantity Package Deal ID (for multi-pack pricing)
       customer: {
         full_name: formData.fullName,
         phone:     formData.phone,
@@ -615,10 +615,12 @@ puts response.body</code></pre>
     "id":             1042,
     "number":         "1042",
     "status":         "processing",
+    "order_type":     "discount",
+    "tier_id":        "tier_6a1f8b",
     "subtotal":       1900,
+    "package_price":  1800,
     "shipping":       80,
     "discount_total": 100,
-    "coupon_code":    "FLASH50",
     "total":          1880
   },
   "customer": {
@@ -655,262 +657,79 @@ puts response.body</code></pre>
             </div>
         </div>
 
-        <!-- ── Endpoint 3: Validate Coupon / Promo Code ── -->
+        <!-- ── Feature Guide: Quantity Package Deals ── -->
         <div class="op-cb-card">
             <div class="op-cb-card-header">
                 <h2>
-                    <i class="fa-solid fa-ticket"></i>
-                    <?php esc_html_e('Endpoint 3: Validate Coupon / Promo Code', 'op-checkoutbridge'); ?>
+                    <i class="fa-solid fa-boxes-stacked" style="color:var(--cb-indigo-600);margin-right:6px;"></i>
+                    <?php esc_html_e('Feature Guide: Quantity Package Deals (tier_id)', 'op-checkoutbridge'); ?>
                 </h2>
-                <span class="op-cb-badge op-cb-badge-success">POST</span>
+                <span class="op-cb-badge op-cb-badge-primary"><?php esc_html_e('SERVER-SIDE ENGINE', 'op-checkoutbridge'); ?></span>
             </div>
             <div class="op-cb-card-body">
-
                 <div class="op-cb-endpoint-block">
-                    <h3 class="op-cb-endpoint-title">
-                        <span class="op-cb-badge op-cb-badge-success">POST</span>
-                        <code>/wp-json/checkoutbridge/v1/validate-coupon</code>
-                    </h3>
                     <p class="op-cb-endpoint-desc">
-                        <?php esc_html_e('Validates a WooCommerce promo coupon code in real-time and returns the calculated discount amount, new subtotal, and total before order submission.', 'op-checkoutbridge'); ?>
+                        <?php esc_html_e('CheckoutBridge supports automated multi-pack / bundle pricing. In Bridge Manager, configure fixed package prices for specific item quantities (e.g., 2 items for $500). Each configured deal generates a Unique Deal ID.', 'op-checkoutbridge'); ?>
                     </p>
 
-                    <div class="op-cb-base-url-chip">
-                        <span><?php esc_html_e('Base URL:', 'op-checkoutbridge'); ?></span>
-                        <code><?php echo esc_html($op_cb_site_rest_url); ?>validate-coupon</code>
-                        <button type="button" class="op-cb-btn-icon op-cb-btn-copy" data-clipboard="<?php echo esc_attr($op_cb_site_rest_url . 'validate-coupon'); ?>">
-                            <i class="fa-solid fa-copy"></i>
-                        </button>
+                    <div class="op-cb-callout op-cb-mt-3" style="margin-bottom:16px;">
+                        <div class="op-cb-callout-icon">
+                            <i class="fa-solid fa-shield-halved"></i>
+                        </div>
+                        <div class="op-cb-callout-content">
+                            <h4><?php esc_html_e('How Order Type Recognition Works', 'op-checkoutbridge'); ?></h4>
+                            <p style="font-size:12.5px;color:var(--cb-text-700);margin:4px 0 0 0;line-height:1.55;">
+                                <strong><?php esc_html_e('Normal Orders:', 'op-checkoutbridge'); ?></strong> <?php esc_html_e('When a customer purchases without selecting a deal (no tier_id sent), the server calculates standard WooCommerce product prices. Order is tagged as normal.', 'op-checkoutbridge'); ?><br>
+                                <strong><?php esc_html_e('Discount Orders:', 'op-checkoutbridge'); ?></strong> <?php esc_html_e('When a customer selects a deal, send its Unique Deal ID as tier_id in POST /create-order. The server validates that the required quantity of products was selected, automatically applies a negative fee line item to match your fixed package price, and tags the order as discount.', 'op-checkoutbridge'); ?>
+                            </p>
+                        </div>
                     </div>
 
-                    <!-- Code Snippet Tabs -->
-                    <div class="op-cb-code-wrapper">
+                    <!-- Code Sample: Submitting with tier_id -->
+                    <div class="op-cb-code-wrapper op-cb-mt-3">
                         <div class="op-cb-code-header">
-                            <div class="op-cb-code-tabs">
-                                <button type="button" class="op-cb-tab-btn is-active" data-tab="tab_js_coupon">JS Fetch</button>
-                                <button type="button" class="op-cb-tab-btn" data-tab="tab_php_coupon">PHP cURL</button>
-                                <button type="button" class="op-cb-tab-btn" data-tab="tab_react_coupon">React / Next.js</button>
-                                <button type="button" class="op-cb-tab-btn" data-tab="tab_python_coupon">Python</button>
-                                <button type="button" class="op-cb-tab-btn" data-tab="tab_node_coupon">Node.js</button>
-                                <button type="button" class="op-cb-tab-btn" data-tab="tab_go_coupon">Go</button>
-                                <button type="button" class="op-cb-tab-btn" data-tab="tab_ruby_coupon">Ruby</button>
-                                <button type="button" class="op-cb-tab-btn" data-tab="tab_curl_coupon">cURL CLI</button>
-                            </div>
-                            <button type="button" class="op-cb-btn-copy-code" data-target="code_coupon_active">
+                            <span class="op-cb-code-lang-chip"><?php esc_html_e('JavaScript Fetch — Submitting with tier_id', 'op-checkoutbridge'); ?></span>
+                            <button type="button" class="op-cb-btn-copy-code" data-target="code_tier_example">
                                 <i class="fa-solid fa-copy" style="margin-right:0.125em;"></i>
                                 <?php esc_html_e('Copy', 'op-checkoutbridge'); ?>
                             </button>
                         </div>
-
-                        <!-- JS Fetch -->
-                        <div id="tab_js_coupon" class="op-cb-code-tab-content">
-                            <pre class="op-cb-code-block"><code>async function validateCoupon(code, items, shippingCost) {
-  const res = await fetch('<?php echo esc_js($op_cb_site_rest_url . 'validate-coupon'); ?>', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      bridge_token: 'op_cb_YOUR_BRIDGE_TOKEN',
-      coupon_code: code,
-      items: items, // [{ id: 14, quantity: 2 }]
-      shipping_cost: shippingCost
-    })
-  });
-  const data = await res.json();
-  if (data.success && data.coupon) {
-    console.log("Discount Saved:", data.coupon.discount_amount, "New Total:", data.coupon.total);
-  }
-}</code></pre>
-                        </div>
-
-                        <!-- PHP cURL -->
-                        <div id="tab_php_coupon" class="op-cb-code-tab-content op-cb-hidden">
-                            <pre class="op-cb-code-block"><code>&lt;?php
-$payload = json_encode([
-    'bridge_token' => 'op_cb_YOUR_BRIDGE_TOKEN',
-    'coupon_code'   => 'FLASH50',
-    'items'         => [['id' => 14, 'quantity' => 2]],
-    'shipping_cost' => 60
-]);
-
-$ch = curl_init('<?php echo esc_js($op_cb_site_rest_url . 'validate-coupon'); ?>');
-curl_setopt_array($ch, [
-    CURLOPT_RETURNTRANSFER => true,
-    CURLOPT_POST           => true,
-    CURLOPT_HTTPHEADER     => ['Content-Type: application/json'],
-    CURLOPT_POSTFIELDS     => $payload,
-]);
-
-$data = json_decode(curl_exec($ch), true);
-curl_close($ch);</code></pre>
-                        </div>
-
-                        <!-- React / Next.js -->
-                        <div id="tab_react_coupon" class="op-cb-code-tab-content op-cb-hidden">
-                            <pre class="op-cb-code-block"><code>import { useState } from 'react';
-
-export default function CouponValidator() {
-  const [discount, setDiscount] = useState(0);
-
-  const applyCoupon = async (code) => {
-    const res = await fetch('<?php echo esc_js($op_cb_site_rest_url . 'validate-coupon'); ?>', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        bridge_token: 'op_cb_YOUR_BRIDGE_TOKEN',
-        coupon_code: code,
-        items: [{ id: 14, quantity: 2 }],
-        shipping_cost: 60
-      })
-    });
-    const data = await res.json();
-    if (data.success && data.coupon) {
-      setDiscount(data.coupon.discount_amount);
-    }
-  };
-
-  return &lt;button onClick={() => applyCoupon('FLASH50')}&gt;Apply Coupon&lt;/button&gt;;
-}</code></pre>
-                        </div>
-
-                        <!-- Python -->
-                        <div id="tab_python_coupon" class="op-cb-code-tab-content op-cb-hidden">
-                            <pre class="op-cb-code-block"><code>import requests
-
-payload = {
-    'bridge_token': 'op_cb_YOUR_BRIDGE_TOKEN',
-    'coupon_code': 'FLASH50',
-    'items': [{'id': 14, 'quantity': 2}],
-    'shipping_cost': 60
-}
-
-response = requests.post(
-    '<?php echo esc_js($op_cb_site_rest_url . 'validate-coupon'); ?>',
-    json=payload
-)
-
-result = response.json()
-if result.get('success'):
-    print("Discount Amount:", result['coupon']['discount_amount'])</code></pre>
-                        </div>
-
-                        <!-- Node.js -->
-                        <div id="tab_node_coupon" class="op-cb-code-tab-content op-cb-hidden">
-                            <pre class="op-cb-code-block"><code>const axios = require('axios');
-
-async function validateCoupon(code) {
-  const { data } = await axios.post('<?php echo esc_js($op_cb_site_rest_url . 'validate-coupon'); ?>', {
+                        <pre class="op-cb-code-block"><code id="code_tier_example">// Example: Submitting a 2-item package deal with tier_id
+const response = await fetch('<?php echo esc_js($op_cb_site_rest_url . 'create-order'); ?>', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
     bridge_token: 'op_cb_YOUR_BRIDGE_TOKEN',
-    coupon_code: code,
-    items: [{ id: 14, quantity: 2 }],
-    shipping_cost: 60
-  });
-  return data;
-}</code></pre>
-                        </div>
-
-                        <!-- Go -->
-                        <div id="tab_go_coupon" class="op-cb-code-tab-content op-cb-hidden">
-                            <pre class="op-cb-code-block"><code>package main
-
-import (
-    "bytes"
-    "encoding/json"
-    "fmt"
-    "net/http"
-)
-
-func main() {
-    payload := map[string]interface{}{
-        "bridge_token": "op_cb_YOUR_BRIDGE_TOKEN",
-        "coupon_code":   "FLASH50",
-        "items":         []map[string]int{{"id": 14, "quantity": 2}},
-        "shipping_cost": 60,
+    tier_id:      'tier_6a1f8b', // Unique Deal ID copied from Bridge Manager
+    items: [
+      { id: 14, quantity: 2 }   // Total quantity meets or exceeds tier requirements
+    ],
+    customer: {
+      full_name: 'Tanvir Hassan',
+      phone:     '01812345678',
+      address:   'House 45, Road 7, Mirpur 10, Dhaka'
+    },
+    shipping: {
+      id:    'inside_dhaka',
+      label: 'Inside Dhaka',
+      cost:  80
     }
-    body, _ := json.Marshal(payload)
-    resp, err := http.Post("<?php echo esc_js($op_cb_site_rest_url . 'validate-coupon'); ?>", "application/json", bytes.NewBuffer(body))
-    if err != nil {
-        panic(err)
-    }
-    defer resp.Body.Close()
-
-    var res map[string]interface{}
-    json.NewDecoder(resp.Body).Decode(&res)
-    fmt.Println(res)
-}</code></pre>
-                        </div>
-
-                        <!-- Ruby -->
-                        <div id="tab_ruby_coupon" class="op-cb-code-tab-content op-cb-hidden">
-                            <pre class="op-cb-code-block"><code>require 'net/http'
-require 'json'
-require 'uri'
-
-uri = URI.parse('<?php echo esc_js($op_cb_site_rest_url . 'validate-coupon'); ?>')
-payload = {
-  bridge_token: 'op_cb_YOUR_BRIDGE_TOKEN',
-  coupon_code: 'FLASH50',
-  items: [{ id: 14, quantity: 2 }],
-  shipping_cost: 60
-}
-
-http = Net::HTTP.new(uri.host, uri.port)
-request = Net::HTTP::Post.new(uri.path, {'Content-Type' => 'application/json'})
-request.body = payload.to_json
-
-response = http.request(request)
-puts response.body</code></pre>
-                        </div>
-
-                        <!-- cURL CLI -->
-                        <div id="tab_curl_coupon" class="op-cb-code-tab-content op-cb-hidden">
-                            <pre class="op-cb-code-block"><code>curl -X POST "<?php echo esc_js($op_cb_site_rest_url . 'validate-coupon'); ?>" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "bridge_token": "op_cb_YOUR_BRIDGE_TOKEN",
-    "coupon_code": "FLASH50",
-    "items": [{"id": 14, "quantity": 2}],
-    "shipping_cost": 60
-  }'</code></pre>
-                        </div>
-                    </div>
-
-                    <!-- Response Sample -->
-                    <div class="op-cb-code-wrapper op-cb-mt-3">
-                        <div class="op-cb-code-header">
-                            <span class="op-cb-code-lang-chip"><?php esc_html_e('JSON — Success Response (200 OK)', 'op-checkoutbridge'); ?></span>
-                            <button type="button" class="op-cb-btn-copy-code" data-target="code_coupon_resp">
-                                <i class="fa-solid fa-copy" style="margin-right:0.125em;"></i>
-                                <?php esc_html_e('Copy JSON', 'op-checkoutbridge'); ?>
-                            </button>
-                        </div>
-                        <pre class="op-cb-code-block"><code id="code_coupon_resp">{
-  "success": true,
-  "valid": true,
-  "coupon": {
-    "code": "FLASH50",
-    "discount_type": "percent",
-    "coupon_amount": 10,
-    "discount_amount": 80,
-    "discount_formatted": "৳80.00",
-    "subtotal": 800,
-    "shipping": 60,
-    "total": 780
-  },
-  "message": "Coupon code \"FLASH50\" applied successfully."
-}</code></pre>
+  })
+});
+const result = await response.json();
+console.log("Order Type:", result.order_type, "Tier ID:", result.tier_id);</code></pre>
                     </div>
 
                 </div>
-
             </div>
         </div>
 
-        <!-- ── Endpoint 4: Integration Health Check ── -->
+        <!-- ── Endpoint 3: Integration Health Check ── -->
         <div class="op-cb-card">
             <div class="op-cb-card-header">
                 <h2>
                     <i class="fa-solid fa-heart-pulse"></i>
-                    <?php esc_html_e('Endpoint 4: Integration Health Check', 'op-checkoutbridge'); ?>
+                    <?php esc_html_e('Endpoint 3: Integration Health Check', 'op-checkoutbridge'); ?>
                 </h2>
                 <span class="op-cb-badge op-cb-badge-info">GET</span>
             </div>
@@ -1107,9 +926,14 @@ puts JSON.parse(res)</code></pre>
                                 <td style="font-size:13px;"><?php esc_html_e('One or more of full_name, phone, address fields are missing.', 'op-checkoutbridge'); ?></td>
                             </tr>
                             <tr>
-                                <td><code>invalid_coupon</code></td>
+                                <td><code>invalid_tier_id</code></td>
                                 <td><span class="op-cb-badge op-cb-badge-warning">400</span></td>
-                                <td style="font-size:13px;"><?php esc_html_e('The coupon code provided is invalid, expired, or does not exist.', 'op-checkoutbridge'); ?></td>
+                                <td style="font-size:13px;"><?php esc_html_e('The package deal tier ID is invalid or not configured on this campaign.', 'op-checkoutbridge'); ?></td>
+                            </tr>
+                            <tr>
+                                <td><code>insufficient_tier_quantity</code></td>
+                                <td><span class="op-cb-badge op-cb-badge-warning">400</span></td>
+                                <td style="font-size:13px;"><?php esc_html_e('The total quantity of items selected is less than the tier requires.', 'op-checkoutbridge'); ?></td>
                             </tr>
                             <tr>
                                 <td><code>invalid_token</code></td>

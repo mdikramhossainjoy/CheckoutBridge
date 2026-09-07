@@ -2339,3 +2339,83 @@ body.op-cb-modal-open {
     height: 48px;
   }
 }
+
+/* ── Quantity Package Deals Repeater Table ── */
+.op-cb-package-tiers-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: var(--cb-r-md);
+  border: 1px solid var(--cb-border);
+  background: var(--cb-surface-1);
+  margin-bottom: 16px;
+}
+
+.op-cb-package-tiers-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 13px;
+}
+
+.op-cb-package-tiers-table thead th {
+  background: var(--cb-surface-2);
+  color: var(--cb-text-700);
+  font-size: 11.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--cb-border);
+}
+
+.op-cb-package-tiers-table tbody td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--cb-border-2);
+  vertical-align: middle;
+}
+
+.op-cb-package-tiers-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.op-cb-price-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.op-cb-price-symbol {
+  position: absolute;
+  left: 10px;
+  font-weight: 700;
+  color: var(--cb-text-500);
+  pointer-events: none;
+  font-size: 13px;
+}
+
+.op-cb-price-input-wrap .op-cb-tier-price {
+  padding-left: 26px !important;
+}
+
+.op-cb-tier-id-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.op-cb-tier-id-input {
+  font-family: var(--cb-font-mono) !important;
+  font-size: 12px !important;
+  background: var(--cb-surface-2) !important;
+  color: var(--cb-indigo-600) !important;
+  font-weight: 600 !important;
+  cursor: text;
+}
+
+.op-cb-package-tiers-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+

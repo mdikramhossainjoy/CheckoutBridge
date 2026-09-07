@@ -187,23 +187,73 @@ class OP_CB_Order_Engine {
         $order->update_meta_data('_op_cb_shipping_label', $shipping_label);
         $order->update_meta_data('_op_cb_shipping_cost', $shipping_cost);
 
-        // Process Dynamic Coupon / Promo Code Validation & Application
-        $coupon_code = isset($raw_params['coupon_code']) ? strtoupper(trim(sanitize_text_field($raw_params['coupon_code']))) : '';
-        if (!empty($coupon_code)) {
-            $coupon = new \WC_Coupon($coupon_code);
-            if (!$coupon->get_id()) {
+        // Process Quantity Package Deal / Tier Pricing Verification & Application
+        $tier_id           = isset($raw_params['tier_id']) ? sanitize_key($raw_params['tier_id']) : '';
+        $is_discount_order = false;
+        $matched_tier      = null;
+
+        if (!empty($tier_id)) {
+            if (empty($landing['enable_quantity_pricing']) || empty($landing['quantity_pricing_tiers']) || !is_array($landing['quantity_pricing_tiers'])) {
                 $order->delete(true);
-                /* translators: %s: Coupon code */
-                return new WP_Error('invalid_coupon', sprintf(__('The coupon code "%s" does not exist.', 'op-checkoutbridge'), $coupon_code), array('status' => 400));
+                return new WP_Error('quantity_pricing_disabled', __('Quantity package pricing is not enabled for this campaign.', 'op-checkoutbridge'), array('status' => 400));
             }
 
-            // Apply coupon to WooCommerce Order
-            $applied = $order->apply_coupon($coupon_code);
-            if (is_wp_error($applied)) {
-                $order->delete(true);
-                return new WP_Error('coupon_application_failed', $applied->get_error_message(), array('status' => 400));
+            foreach ($landing['quantity_pricing_tiers'] as $tier) {
+                if (isset($tier['tier_id']) && $tier['tier_id'] === $tier_id) {
+                    $matched_tier = $tier;
+                    break;
+                }
             }
-            $order->update_meta_data('_op_cb_coupon_code', $coupon_code);
+
+            if (!$matched_tier) {
+                $order->delete(true);
+                /* translators: %s: Tier ID */
+                return new WP_Error('invalid_tier_id', sprintf(__('Invalid package deal tier ID: "%s".', 'op-checkoutbridge'), $tier_id), array('status' => 400));
+            }
+
+            // Validate that total quantity of assigned products is at least the tier's required quantity
+            $total_qty = 0;
+            foreach ($order_line_items as $line_item) {
+                $total_qty += $line_item['quantity'];
+            }
+
+            $required_qty = isset($matched_tier['quantity']) ? intval($matched_tier['quantity']) : 1;
+            if ($total_qty < $required_qty) {
+                $order->delete(true);
+                /* translators: 1: required quantity, 2: selected quantity */
+                return new WP_Error('insufficient_tier_quantity', sprintf(__('This package deal requires at least %1$d items. You selected %2$d.', 'op-checkoutbridge'), $required_qty, $total_qty), array('status' => 400));
+            }
+
+            $is_discount_order = true;
+        }
+
+        if ($is_discount_order && $matched_tier) {
+            // Calculate regular items subtotal
+            $regular_subtotal = 0.0;
+            foreach ($order_line_items as $line_item) {
+                $regular_subtotal += floatval($line_item['product']->get_price()) * $line_item['quantity'];
+            }
+
+            $package_price   = floatval($matched_tier['price']);
+            $discount_amount = max(0.0, round($regular_subtotal - $package_price, 2));
+
+            if ($discount_amount > 0 && class_exists('WC_Order_Item_Fee')) {
+                $fee_item = new \WC_Order_Item_Fee();
+                /* translators: %s: Deal ID */
+                $fee_name = sprintf(__('Package Deal Discount (%s)', 'op-checkoutbridge'), $matched_tier['tier_id']);
+                $fee_item->set_name($fee_name);
+                $fee_item->set_amount(-$discount_amount);
+                $fee_item->set_total(-$discount_amount);
+                $order->add_item($fee_item);
+            }
+
+            $order->update_meta_data('_op_cb_order_type', 'discount');
+            $order->update_meta_data('_op_cb_tier_id', $matched_tier['tier_id']);
+            $order->update_meta_data('_op_cb_tier_quantity', $matched_tier['quantity']);
+            $order->update_meta_data('_op_cb_tier_price', $package_price);
+            $order->update_meta_data('_op_cb_discount_amount', $discount_amount);
+        } else {
+            $order->update_meta_data('_op_cb_order_type', 'normal');
         }
 
         // Save Meta (Facebook) CAPI Tracking Metadata (HPOS Native)
@@ -329,19 +379,24 @@ class OP_CB_Order_Engine {
         }
 
         // Order Summary
-        $coupons = $order->get_coupon_codes();
-        $discount_total = floatval($order->get_discount_total());
-        $coupon_code_meta = $order->get_meta('_op_cb_coupon_code');
-        $applied_coupon = !empty($coupons) ? implode(', ', $coupons) : ($coupon_code_meta ? $coupon_code_meta : '');
+        $order_type      = $order->get_meta('_op_cb_order_type') ?: 'normal';
+        $tier_id         = $order->get_meta('_op_cb_tier_id') ?: '';
+        $package_price   = floatval($order->get_meta('_op_cb_tier_price'));
+        $discount_amount = floatval($order->get_meta('_op_cb_discount_amount'));
+        if ($discount_amount <= 0) {
+            $discount_amount = floatval($order->get_discount_total());
+        }
 
         $order_summary = array(
             'id'             => $order->get_id(),
             'number'         => $order->get_order_number(),
             'status'         => $order->get_status(),
+            'order_type'     => $order_type,
+            'tier_id'        => $tier_id,
             'subtotal'       => floatval($order->get_subtotal()),
+            'package_price'  => $package_price > 0 ? $package_price : null,
             'shipping'       => $shipping_cost,
-            'discount_total' => $discount_total,
-            'coupon_code'    => $applied_coupon,
+            'discount_total' => $discount_amount,
             'total'          => floatval($order->get_total())
         );
 
@@ -353,108 +408,5 @@ class OP_CB_Order_Engine {
             'items'    => $items
         );
     }
-
-    /**
-     * Validate Coupon / Promo Code and calculate preview discount
-     */
-    public static function validate_coupon_code($landing, $coupon_code, $raw_params = array()) {
-        if (!class_exists('WooCommerce')) {
-            return new WP_Error('wc_missing', __('WooCommerce plugin is not active.', 'op-checkoutbridge'), array('status' => 500));
-        }
-
-        $code = strtoupper(trim(sanitize_text_field($coupon_code)));
-        if (empty($code)) {
-            return new WP_Error('missing_coupon', __('Coupon code is required.', 'op-checkoutbridge'), array('status' => 400));
-        }
-
-        $coupon = new \WC_Coupon($code);
-        if (!$coupon->get_id()) {
-            /* translators: %s: Coupon code */
-            return new WP_Error('invalid_coupon', sprintf(__('The coupon code "%s" is invalid or does not exist.', 'op-checkoutbridge'), $code), array('status' => 400));
-        }
-
-        // Validate assigned products & build items array
-        $assigned_product_ids = !empty($landing['assigned_products']) ? array_unique(array_map('intval', $landing['assigned_products'])) : array();
-        
-        $requested_items = array();
-        if (!empty($raw_params['items']) && is_array($raw_params['items'])) {
-            foreach ($raw_params['items'] as $item) {
-                $p_id = isset($item['id']) ? intval($item['id']) : (isset($item['product_id']) ? intval($item['product_id']) : 0);
-                $qty  = isset($item['quantity']) ? min(99, max(1, intval($item['quantity']))) : 1;
-                if ($p_id > 0 && (empty($assigned_product_ids) || in_array($p_id, $assigned_product_ids, true))) {
-                    $requested_items[$p_id] = $qty;
-                }
-            }
-        } elseif (!empty($raw_params['product_id'])) {
-            $p_id = intval($raw_params['product_id']);
-            $qty  = isset($raw_params['quantity']) ? min(99, max(1, intval($raw_params['quantity']))) : 1;
-            if ($p_id > 0 && (empty($assigned_product_ids) || in_array($p_id, $assigned_product_ids, true))) {
-                $requested_items[$p_id] = $qty;
-            }
-        }
-
-        // Calculate subtotal
-        $subtotal = 0;
-        foreach ($requested_items as $prod_id => $qty) {
-            $product = wc_get_product($prod_id);
-            if ($product && $product->is_purchasable()) {
-                $subtotal += floatval($product->get_price()) * $qty;
-            }
-        }
-
-        // Create temporary order in memory to calculate exact WooCommerce coupon discount
-        $temp_order = wc_create_order(array('status' => 'pending'));
-        if (is_wp_error($temp_order)) {
-            return new WP_Error('temp_order_error', __('Unable to calculate coupon discount.', 'op-checkoutbridge'), array('status' => 500));
-        }
-
-        foreach ($requested_items as $prod_id => $qty) {
-            $product = wc_get_product($prod_id);
-            if ($product) {
-                $temp_order->add_product($product, $qty);
-            }
-        }
-
-        $shipping_cost = isset($raw_params['shipping_cost']) ? floatval($raw_params['shipping_cost']) : (isset($raw_params['shipping']['cost']) ? floatval($raw_params['shipping']['cost']) : 0);
-        if ($shipping_cost > 0 && class_exists('WC_Order_Item_Shipping')) {
-            $shipping_item = new WC_Order_Item_Shipping();
-            $shipping_item->set_method_title('Shipping');
-            $shipping_item->set_method_id('standard');
-            $shipping_item->set_total($shipping_cost);
-            $temp_order->add_item($shipping_item);
-        }
-
-        $applied = $temp_order->apply_coupon($code);
-        if (is_wp_error($applied)) {
-            $temp_order->delete(true);
-            return new WP_Error('coupon_invalid', $applied->get_error_message(), array('status' => 400));
-        }
-
-        $temp_order->calculate_totals(false);
-        $discount_amount = floatval($temp_order->get_discount_total());
-        $grand_total     = floatval($temp_order->get_total());
-        $discount_type   = $coupon->get_discount_type();
-        $coupon_amount   = floatval($coupon->get_amount());
-
-        $temp_order->delete(true); // Clean up temporary order
-
-        /* translators: %s: Coupon code */
-        $applied_msg = sprintf(__('Coupon code "%s" applied successfully.', 'op-checkoutbridge'), $code);
-
-        return array(
-            'success'            => true,
-            'valid'              => true,
-            'coupon' => array(
-                'code'               => $code,
-                'discount_type'      => $discount_type,
-                'coupon_amount'      => $coupon_amount,
-                'discount_amount'    => $discount_amount,
-                'discount_formatted' => function_exists('wc_price') ? wp_strip_all_tags(wc_price($discount_amount)) : number_format($discount_amount, 2),
-                'subtotal'           => $subtotal,
-                'shipping'           => $shipping_cost,
-                'total'              => $grand_total,
-            ),
-            'message'            => $applied_msg
-        );
-    }
 }
+

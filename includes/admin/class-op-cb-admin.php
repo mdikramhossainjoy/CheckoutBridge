@@ -138,8 +138,9 @@ class OP_CB_Admin {
         }
 
         wp_localize_script('op-cb-admin-js', 'op_cb_vars', array(
-            'rest_url' => esc_url_raw(rest_url('checkoutbridge/v1/')),
-            'flash'    => $flash ? $flash : null,
+            'rest_url'        => esc_url_raw(rest_url('checkoutbridge/v1/')),
+            'currency_symbol' => function_exists('get_woocommerce_currency_symbol') ? get_woocommerce_currency_symbol() : '$',
+            'flash'           => $flash ? $flash : null,
             'i18n'     => array(
                 'confirm_delete' => __('Are you sure you want to delete this bridge campaign config?', 'op-checkoutbridge'),
                 'confirm_revoke' => __('Are you sure you want to revoke and regenerate this token? Any external landing pages using the old token will immediately lose access.', 'op-checkoutbridge'),
@@ -243,22 +244,44 @@ class OP_CB_Admin {
         $meta_access_token = isset($_POST['meta_access_token']) ? sanitize_textarea_field(wp_unslash($_POST['meta_access_token'])) : '';
         $meta_test_code    = isset($_POST['meta_test_code']) ? sanitize_text_field(wp_unslash($_POST['meta_test_code'])) : '';
 
+        // Quantity Package Deals Settings
+        $enable_quantity_pricing = !empty($_POST['enable_quantity_pricing']) ? 1 : 0;
+        $quantity_pricing_tiers  = array();
+        if (!empty($_POST['quantity_pricing_tiers']) && is_array($_POST['quantity_pricing_tiers'])) {
+            foreach (wp_unslash($_POST['quantity_pricing_tiers']) as $tier) {
+                if (!is_array($tier)) {
+                    continue;
+                }
+                $tier_id  = !empty($tier['tier_id']) ? sanitize_key($tier['tier_id']) : ('tier_' . substr(md5(uniqid(wp_rand(), true)), 0, 6));
+                $quantity = isset($tier['quantity']) ? max(1, intval($tier['quantity'])) : 1;
+                $price    = isset($tier['price']) ? max(0, floatval($tier['price'])) : 0.0;
+
+                $quantity_pricing_tiers[] = array(
+                    'tier_id'  => $tier_id,
+                    'quantity' => $quantity,
+                    'price'    => $price,
+                );
+            }
+        }
+
         $data = array(
-            'name'                 => $name,
-            'token'                => $token,
-            'allowed_origins'      => $origins,
-            'assigned_products'    => $assigned_products,
-            'shipping_options'     => $existing_shipping,
-            'phone_velocity_limit' => $phone_velocity_limit,
-            'ip_velocity_limit'    => $ip_velocity_limit,
-            'velocity_hours'       => $velocity_hours,
-            'enable_meta_capi'     => $enable_meta_capi,
-            'meta_pixel_id'        => $meta_pixel_id,
-            'meta_access_token'    => $meta_access_token,
-            'meta_test_code'       => $meta_test_code,
-            'enable_thank_you_url' => $enable_thank_you,
-            'thank_you_url'        => $thank_you,
-            'status'               => $status
+            'name'                    => $name,
+            'token'                   => $token,
+            'allowed_origins'         => $origins,
+            'assigned_products'       => $assigned_products,
+            'shipping_options'        => $existing_shipping,
+            'phone_velocity_limit'    => $phone_velocity_limit,
+            'ip_velocity_limit'       => $ip_velocity_limit,
+            'velocity_hours'          => $velocity_hours,
+            'enable_meta_capi'        => $enable_meta_capi,
+            'meta_pixel_id'           => $meta_pixel_id,
+            'meta_access_token'       => $meta_access_token,
+            'meta_test_code'          => $meta_test_code,
+            'enable_quantity_pricing' => $enable_quantity_pricing,
+            'quantity_pricing_tiers'  => $quantity_pricing_tiers,
+            'enable_thank_you_url'    => $enable_thank_you,
+            'thank_you_url'           => $thank_you,
+            'status'                  => $status
         );
 
         if ($landing_id > 0) {

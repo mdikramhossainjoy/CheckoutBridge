@@ -7,7 +7,7 @@ Requires PHP: 7.4
 Requires Plugins: woocommerce
 WC requires at least: 5.0
 WC tested up to: 9.3
-Stable tag: 1.0.1
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -23,7 +23,7 @@ It maintains WooCommerce as the single source of truth for product pricing, inve
 
 * **Single Source of Truth**: Product pricing, inventory deduction, and order creation logic executed securely on WooCommerce.
 * **Multi-Product Payload Ingestion**: Supports single or multi-product item selection with custom order quantities per line item.
-* **Real-Time Dynamic Coupon Validator**: Dedicated `/validate-coupon` REST endpoint for real-time promo code validation and discount calculation.
+* **Automated Quantity Package Deals**: Configure multi-pack / bundle pricing tiers per campaign. Each deal generates a Unique Deal ID (`tier_id`) allowing the server to automatically recognize discount vs. normal orders.
 * **Server-Side Meta (Facebook) Conversions API (CAPI)**: Automatic server-to-server SHA-256 hashed Purchase event dispatch directly to Meta Graph API on Processing order status.
 * **Global Dual-Shield Anti-Bot Engine**: E.164 international phone number normalization and Client IP velocity rate limiting to eliminate spam orders.
 * **Stateless Signed Redirect Tokens**: Secure HMAC SHA-256 tokens for tamper-proof thank-you page receipt rendering.
@@ -67,6 +67,13 @@ This plugin can optionally connect to an external third-party service:
   - Meta Privacy Policy: https://www.facebook.com/privacy/policy
 
 == Changelog ==
+
+= 1.1.0 =
+* Feature: Introduced Quantity Package Deals in Bridge Manager with Unique Deal IDs (`tier_id`) and one-click copy functionality.
+* Architecture: Native server-side order type recognition — distinguishes normal orders from discount bundle orders automatically based on `tier_id`.
+* WooCommerce Integration: Automated package discounts applied directly via negative fee line items for 100% HPOS and invoice compatibility.
+* Refactor: Completely removed deprecated `/validate-coupon` endpoint and legacy coupon code processing.
+* Docs: Updated In-Admin Developer Center, interactive code samples, and error codes table for Quantity Package Deals integration.
 
 = 1.0.1 =
 * UI: Unified global section gaps and standardized border-radius system across all admin cards, forms, and buttons.

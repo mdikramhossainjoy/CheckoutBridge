@@ -4,7 +4,7 @@
 [![WooCommerce](https://img.shields.io/badge/WooCommerce-5.0%2B-purple.svg?style=for-the-badge&logo=woocommerce)](https://woocommerce.com)
 [![PHP](https://img.shields.io/badge/PHP-7.4%20%7C%208.0%20%7C%208.1%20%7C%208.2%20%7C%208.3-777BB4.svg?style=for-the-badge&logo=php)](https://php.net)
 [![License](https://img.shields.io/badge/License-GPLv2-green.svg?style=for-the-badge)](README.txt)
-[![Version](https://img.shields.io/badge/Version-1.0.0-indigo.svg?style=for-the-badge)](checkoutbridge.php)
+[![Version](https://img.shields.io/badge/Version-1.1.0-indigo.svg?style=for-the-badge)](checkoutbridge.php)
 
 > **Enterprise Headless Cash on Delivery (COD) & REST API Order Engine for WooCommerce.**
 > Connect custom landing pages (built in React, Next.js, Laravel, Vue, PHP, Python, Node.js, Go, or HTML) directly to WooCommerce while maintaining WooCommerce as the single source of truth for inventory, pricing, order fulfillment, and analytics.
@@ -15,7 +15,7 @@
 
 - **Single Source of Truth**: All pricing calculations, inventory deductions, order creation logic, and status transitions occur securely inside WooCommerce.
 - **Multi-Product Payload Ingestion**: Supports single or multi-product item selections with individual quantity counters per product line item.
-- **Real-Time Dynamic Coupon Validator**: Dedicated `/validate-coupon` REST endpoint for real-time promo code validation and discount calculation before order submission.
+- **Automated Quantity Package Deals**: Configure multi-pack / bundle pricing tiers per campaign. Each deal generates a Unique Deal ID (`tier_id`) allowing the server to automatically recognize discount vs. normal orders.
 - **Server-Side Meta (Facebook) Conversions API (CAPI)**: Automatic server-to-server SHA-256 hashed `Purchase` event dispatch directly to Meta Graph API when orders transition to Processing status, with browser-server deduplication and native HPOS metadata (`_op_cb_fbp`, `_op_cb_fbc`, `_op_cb_event_id`).
 - **Global Dual-Shield Anti-Bot Defense**: E.164 international phone number normalization and Client IP velocity rate limiting to eliminate fake and spam COD orders.
 - **Stateless Signed Redirect Tokens**: Secure HMAC SHA-256 tokens for tamper-proof thank-you page receipt rendering without exposing sensitive order credentials.
@@ -28,43 +28,25 @@
 
 | Endpoint | Method | Description |
 | :--- | :---: | :--- |
-| `/wp-json/checkoutbridge/v1/create-order` | `POST` | Ingests landing page customer details, line items, and shipping selection to create a WooCommerce COD order. Returns a signed redirect token. |
-| `/wp-json/checkoutbridge/v1/validate-coupon` | `POST` | Validates a WooCommerce coupon code in real time and returns subtotal, discount amount, and updated total. |
-| `/wp-json/checkoutbridge/v1/order-details` | `POST` | Validates signed thank-you token and returns formatted customer, shipping, line items, and discount summary. |
+| `/wp-json/checkoutbridge/v1/create-order` | `POST` | Ingests landing page customer details, line items, optional `tier_id`, and shipping selection to create a WooCommerce COD order. Returns order type, tier ID, and signed redirect token. |
+| `/wp-json/checkoutbridge/v1/order-details` | `POST` | Validates signed thank-you token and returns formatted customer, shipping, line items, package price, and discount summary. |
 | `/wp-json/checkoutbridge/v1/health` | `GET` | Verifies REST API infrastructure health, WAF shield status, and plugin version. |
 
 ---
 
 ## Integration Examples
 
-### Coupon Validation & Order Creation (PHP cURL)
+### Order Creation with Quantity Package Deal (PHP cURL)
 
 ```php
 <?php
-// 1. Validate Coupon Code (Optional)
-$coupon_payload = json_encode([
-    'bridge_token'  => 'op_cb_YOUR_CAMPAIGN_TOKEN',
-    'coupon_code'   => 'FLASH50',
-    'items'         => [['id' => 14, 'quantity' => 2]],
-    'shipping_cost' => 60,
-]);
-
-$ch = curl_init('https://yourstore.com/wp-json/checkoutbridge/v1/validate-coupon');
-curl_setopt_array($ch, [
-    CURLOPT_RETURNTRANSFER => true,
-    CURLOPT_POST           => true,
-    CURLOPT_HTTPHEADER     => ['Content-Type: application/json'],
-    CURLOPT_POSTFIELDS     => $coupon_payload,
-]);
-
-$coupon_response = json_decode(curl_exec($ch), true);
-curl_close($ch);
-
-// 2. Submit Cash on Delivery (COD) Order
+// Submit Cash on Delivery (COD) Order with Quantity Package Deal
 $order_payload = json_encode([
     'bridge_token'  => 'op_cb_YOUR_CAMPAIGN_TOKEN',
-    'items'         => [['id' => 14, 'quantity' => 2]],
-    'coupon_code'   => 'FLASH50',
+    'tier_id'       => 'tier_6a1f8b', // Unique Deal ID copied from Bridge Manager
+    'items'         => [
+        ['id' => 14, 'quantity' => 2]
+    ],
     'customer'      => [
         'full_name' => 'Tanvir Hassan',
         'phone'     => '01711000000',
@@ -137,6 +119,13 @@ This plugin can optionally connect to an external third-party service:
 ---
 
 ## Changelog
+
+### v1.1.0
+* **Quantity Package Deals**: Introduced multi-pack bundle pricing in Bridge Manager. Set fixed total prices for specific item quantities with auto-generated Unique Deal IDs (`tier_id`) and one-click copy functionality.
+* **Server-Side Order Recognition**: Automatically recognizes normal orders vs. discount deal orders based on `tier_id` presence and validity.
+* **Native WooCommerce Discounting**: Applies package discounts via native negative fee line items for 100% HPOS, invoice, and reporting compatibility.
+* **Coupon Validation Removal**: Completely removed deprecated `/validate-coupon` REST route and coupon code handling.
+* **Documentation Update**: Updated Developer Center and API reference for package deals.
 
 ### v1.0.1
 * **UI Spacing & Gaps**: Unified global section gaps and standardized border-radius system across all admin cards, forms, and buttons.

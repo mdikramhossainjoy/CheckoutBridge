@@ -3,7 +3,7 @@
  * Plugin Name:       CheckoutBridge
  * Plugin URI:        https://github.com/mdikramhossainjoy/CheckoutBridge
  * Description:       Secure bridge connecting WooCommerce with external custom landing pages for automated COD order creation and order details management.
- * Version:           1.0.1
+ * Version:           1.1.0
  * Requires at least: 5.8
  * Tested up to:      7.1
  * Requires PHP:      7.4
@@ -23,7 +23,7 @@ if (!defined('ABSPATH')) {
 }
 
 // Define Plugin Constants with OP_CB_ prefix
-define('OP_CB_VERSION', '1.0.1');
+define('OP_CB_VERSION', '1.1.0');
 define('OP_CB_FILE', __FILE__);
 define('OP_CB_PATH', plugin_dir_path(__FILE__));
 define('OP_CB_URL', plugin_dir_url(__FILE__));

@@ -456,4 +456,108 @@ jQuery(document).ready(function ($) {
     });
   });
 
+  /* ── 9. Quantity Package Deals Repeater ──────────────────────────── */
+  var $enableQtyPricing = $('#op_cb_enable_quantity_pricing');
+  var $qtyPricingBody   = $('#op_cb_quantity_pricing_body');
+  var $tiersTbody       = $('#op_cb_package_tiers_tbody');
+  var storeCurrency     = (window.op_cb_vars && op_cb_vars.currency_symbol) ? op_cb_vars.currency_symbol : '$';
+
+  // Toggle card body visibility
+  $enableQtyPricing.on('change', function () {
+    if ($(this).is(':checked')) {
+      $qtyPricingBody.slideDown(200);
+      if ($tiersTbody.find('.op-cb-tier-row').length === 0) {
+        addTierRow(2, '');
+      }
+    } else {
+      $qtyPricingBody.slideUp(200);
+    }
+  });
+
+  function generateUniqueTierId() {
+    return 'tier_' + Math.random().toString(36).substring(2, 8);
+  }
+
+  function addTierRow(qty, price, tierId) {
+    var index = $tiersTbody.find('.op-cb-tier-row').length;
+    var safeQty = qty !== undefined ? qty : (index + 2);
+    var safePrice = price !== undefined ? price : '';
+    var safeId = tierId || generateUniqueTierId();
+
+    var rowHtml = '<tr class="op-cb-tier-row" data-index="' + index + '">' +
+      '<td>' +
+        '<input type="number" name="quantity_pricing_tiers[' + index + '][quantity]" class="op-cb-input op-cb-tier-qty" min="1" max="999" value="' + safeQty + '" required>' +
+      '</td>' +
+      '<td>' +
+        '<div class="op-cb-price-input-wrap">' +
+          '<span class="op-cb-price-symbol">' + storeCurrency + '</span>' +
+          '<input type="number" step="any" min="0" name="quantity_pricing_tiers[' + index + '][price]" class="op-cb-input op-cb-tier-price" value="' + safePrice + '" placeholder="0.00" required>' +
+        '</div>' +
+      '</td>' +
+      '<td>' +
+        '<div class="op-cb-tier-id-cell">' +
+          '<input type="text" name="quantity_pricing_tiers[' + index + '][tier_id]" class="op-cb-input op-cb-tier-id-input" value="' + safeId + '" readonly>' +
+          '<button type="button" class="op-cb-btn-icon op-cb-btn-copy-tier" data-tier-id="' + safeId + '" title="Copy Deal ID">' +
+            '<i class="fa-solid fa-copy"></i>' +
+          '</button>' +
+        '</div>' +
+      '</td>' +
+      '<td style="text-align:center;">' +
+        '<button type="button" class="op-cb-btn-icon op-cb-btn-delete-tier" title="Remove Deal" style="color:var(--cb-danger-600);">' +
+          '<i class="fa-solid fa-trash-can"></i>' +
+        '</button>' +
+      '</td>' +
+    '</tr>';
+
+    $tiersTbody.append(rowHtml);
+  }
+
+  $('#op_cb_add_tier_btn').on('click', function (e) {
+    e.preventDefault();
+    addTierRow();
+  });
+
+  // Remove row handler
+  $(document).on('click', '.op-cb-btn-delete-tier', function (e) {
+    e.preventDefault();
+    var $row = $(this).closest('.op-cb-tier-row');
+    $row.fadeOut(150, function () {
+      $row.remove();
+      // Re-index remaining rows for clean form POST
+      $tiersTbody.find('.op-cb-tier-row').each(function (idx) {
+        $(this).attr('data-index', idx);
+        $(this).find('.op-cb-tier-qty').attr('name', 'quantity_pricing_tiers[' + idx + '][quantity]');
+        $(this).find('.op-cb-tier-price').attr('name', 'quantity_pricing_tiers[' + idx + '][price]');
+        $(this).find('.op-cb-tier-id-input').attr('name', 'quantity_pricing_tiers[' + idx + '][tier_id]');
+      });
+    });
+  });
+
+  // Copy Tier ID handler
+  $(document).on('click', '.op-cb-btn-copy-tier', function (e) {
+    e.preventDefault();
+    var tierId = $(this).attr('data-tier-id') || $(this).closest('.op-cb-tier-id-cell').find('.op-cb-tier-id-input').val();
+    if (!tierId) return;
+
+    var copiedMsg = getI18n('copied', 'Copied Deal ID: ' + tierId);
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(tierId).then(function () {
+        showToast(copiedMsg, 'success');
+      }).catch(function () {
+        copyTierFallback(tierId, copiedMsg);
+      });
+    } else {
+      copyTierFallback(tierId, copiedMsg);
+    }
+  });
+
+  function copyTierFallback(text, msg) {
+    var $tmp = $('<textarea style="position:fixed;opacity:0;">');
+    $('body').append($tmp);
+    $tmp.val(text).select();
+    document.execCommand('copy');
+    $tmp.remove();
+    showToast(msg, 'success');
+  }
+
 });
