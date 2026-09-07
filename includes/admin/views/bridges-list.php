@@ -48,15 +48,14 @@ $op_cb_bridges = OP_CB_Bridge_Repository::get_all();
 
                 <!-- Table Filter Controls -->
                 <div class="op-cb-table-controls">
-                    <div class="op-cb-search-box" style="position:relative;display:inline-block;width:240px;">
+                    <div class="op-cb-search-box">
                         <input
                             type="text"
                             id="op_cb_table_search"
                             class="op-cb-input has-icon-right"
-                            style="width: 100%;"
                             placeholder="<?php esc_attr_e('Search bridges…', 'op-checkoutbridge'); ?>"
                         >
-                        <i class="fa-solid fa-magnifying-glass" style="position:absolute;right:0.75em;top:50%;transform:translateY(-50%);color:var(--cb-text-400);pointer-events:none;"></i>
+                        <i class="fa-solid fa-magnifying-glass"></i>
                     </div>
                     <div class="op-cb-filter-group">
                         <select id="op_cb_filter_status" class="op-cb-select">

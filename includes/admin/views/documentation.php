@@ -685,16 +685,28 @@ puts response.body</code></pre>
                         </div>
                     </div>
 
-                    <!-- Code Sample: Submitting with tier_id -->
+                    <!-- Tabbed Code Block for Quantity Package Deals -->
                     <div class="op-cb-code-wrapper op-cb-mt-3">
                         <div class="op-cb-code-header">
-                            <span class="op-cb-code-lang-chip"><?php esc_html_e('JavaScript Fetch — Submitting with tier_id', 'op-checkoutbridge'); ?></span>
-                            <button type="button" class="op-cb-btn-copy-code" data-target="code_tier_example">
+                            <div class="op-cb-code-tabs">
+                                <button type="button" class="op-cb-tab-btn is-active" data-tab="tab_js_tier">JS Fetch</button>
+                                <button type="button" class="op-cb-tab-btn" data-tab="tab_php_tier">PHP cURL</button>
+                                <button type="button" class="op-cb-tab-btn" data-tab="tab_react_tier">React / Next.js</button>
+                                <button type="button" class="op-cb-tab-btn" data-tab="tab_python_tier">Python</button>
+                                <button type="button" class="op-cb-tab-btn" data-tab="tab_node_tier">Node.js</button>
+                                <button type="button" class="op-cb-tab-btn" data-tab="tab_go_tier">Go</button>
+                                <button type="button" class="op-cb-tab-btn" data-tab="tab_ruby_tier">Ruby</button>
+                                <button type="button" class="op-cb-tab-btn" data-tab="tab_curl_tier">cURL CLI</button>
+                            </div>
+                            <button type="button" class="op-cb-btn-copy-code" data-target="code_tier_active">
                                 <i class="fa-solid fa-copy" style="margin-right:0.125em;"></i>
-                                <?php esc_html_e('Copy', 'op-checkoutbridge'); ?>
+                                <?php esc_html_e('Copy Code', 'op-checkoutbridge'); ?>
                             </button>
                         </div>
-                        <pre class="op-cb-code-block"><code id="code_tier_example">// Example: Submitting a 2-item package deal with tier_id
+
+                        <!-- JavaScript Fetch -->
+                        <div id="tab_js_tier" class="op-cb-code-tab-content">
+                            <pre class="op-cb-code-block"><code>// Submitting a 2-item package deal with tier_id
 const response = await fetch('<?php echo esc_js($op_cb_site_rest_url . 'create-order'); ?>', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
@@ -711,13 +723,252 @@ const response = await fetch('<?php echo esc_js($op_cb_site_rest_url . 'create-o
     },
     shipping: {
       id:    'inside_dhaka',
-      label: 'Inside Dhaka',
+      label: 'Inside Dhaka Delivery',
       cost:  80
     }
   })
 });
 const result = await response.json();
 console.log("Order Type:", result.order_type, "Tier ID:", result.tier_id);</code></pre>
+                        </div>
+
+                        <!-- PHP cURL -->
+                        <div id="tab_php_tier" class="op-cb-code-tab-content op-cb-hidden">
+                            <pre class="op-cb-code-block"><code>&lt;?php
+$payload = json_encode([
+    'bridge_token' => 'op_cb_YOUR_BRIDGE_TOKEN',
+    'tier_id'      => 'tier_6a1f8b', // Unique Deal ID copied from Bridge Manager
+    'items'        => [
+        ['id' => 14, 'quantity' => 2]
+    ],
+    'customer'     => [
+        'full_name' => 'Tanvir Hassan',
+        'phone'     => '01812345678',
+        'address'   => 'House 45, Road 7, Mirpur 10, Dhaka',
+    ],
+    'shipping'     => [
+        'id'    => 'inside_dhaka',
+        'label' => 'Inside Dhaka Delivery',
+        'cost'  => 80,
+    ],
+]);
+
+$ch = curl_init('<?php echo esc_js($op_cb_site_rest_url . 'create-order'); ?>');
+curl_setopt_array($ch, [
+    CURLOPT_RETURNTRANSFER => true,
+    CURLOPT_POST           => true,
+    CURLOPT_HTTPHEADER     => ['Content-Type: application/json'],
+    CURLOPT_POSTFIELDS     => $payload,
+]);
+
+$response = json_decode(curl_exec($ch), true);
+curl_close($ch);
+
+// $response['order_type'] === 'discount'
+// $response['tier_id'] === 'tier_6a1f8b'</code></pre>
+                        </div>
+
+                        <!-- React / Next.js -->
+                        <div id="tab_react_tier" class="op-cb-code-tab-content op-cb-hidden">
+                            <pre class="op-cb-code-block"><code>import { useState } from 'react';
+
+export default function PackageDealOrder() {
+  const [loading, setLoading] = useState(false);
+
+  async function handleDealCheckout() {
+    setLoading(true);
+    try {
+      const res = await fetch('<?php echo esc_js($op_cb_site_rest_url . 'create-order'); ?>', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          bridge_token: 'op_cb_YOUR_BRIDGE_TOKEN',
+          tier_id:      'tier_6a1f8b', // Unique Deal ID copied from Bridge Manager
+          items: [
+            { id: 14, quantity: 2 }
+          ],
+          customer: {
+            full_name: 'Tanvir Hassan',
+            phone:     '01812345678',
+            address:   'House 45, Road 7, Mirpur 10, Dhaka'
+          },
+          shipping: {
+            id:    'inside_dhaka',
+            label: 'Inside Dhaka Delivery',
+            cost:  80
+          }
+        })
+      });
+      const data = await res.json();
+      if (data.success && data.redirect_url) {
+        window.location.href = data.redirect_url;
+      }
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    &lt;button onClick={handleDealCheckout} disabled={loading}&gt;
+      {loading ? 'Processing Bundle...' : 'Order 2-Item Package Deal'}
+    &lt;/button&gt;
+  );
+}</code></pre>
+                        </div>
+
+                        <!-- Python -->
+                        <div id="tab_python_tier" class="op-cb-code-tab-content op-cb-hidden">
+                            <pre class="op-cb-code-block"><code>import requests
+
+payload = {
+    'bridge_token': 'op_cb_YOUR_BRIDGE_TOKEN',
+    'tier_id':      'tier_6a1f8b',  # Unique Deal ID copied from Bridge Manager
+    'items': [
+        {'id': 14, 'quantity': 2}
+    ],
+    'customer': {
+        'full_name': 'Tanvir Hassan',
+        'phone':     '01812345678',
+        'address':   'House 45, Road 7, Mirpur 10, Dhaka'
+    },
+    'shipping': {
+        'id':    'inside_dhaka',
+        'label': 'Inside Dhaka Delivery',
+        'cost':  80
+    }
+}
+
+response = requests.post(
+    '<?php echo esc_js($op_cb_site_rest_url . 'create-order'); ?>',
+    json=payload
+)
+
+result = response.json()
+print("Order ID:", result.get("order_id"), "Type:", result.get("order_type"))</code></pre>
+                        </div>
+
+                        <!-- Node.js -->
+                        <div id="tab_node_tier" class="op-cb-code-tab-content op-cb-hidden">
+                            <pre class="op-cb-code-block"><code>const axios = require('axios');
+
+async function submitPackageDeal() {
+  const payload = {
+    bridge_token: 'op_cb_YOUR_BRIDGE_TOKEN',
+    tier_id:      'tier_6a1f8b', // Unique Deal ID copied from Bridge Manager
+    items: [
+      { id: 14, quantity: 2 }
+    ],
+    customer: {
+      full_name: 'Tanvir Hassan',
+      phone:     '01812345678',
+      address:   'House 45, Road 7, Mirpur 10, Dhaka'
+    },
+    shipping: {
+      id:    'inside_dhaka',
+      label: 'Inside Dhaka Delivery',
+      cost:  80
+    }
+  };
+
+  const { data } = await axios.post('<?php echo esc_js($op_cb_site_rest_url . 'create-order'); ?>', payload);
+  return data;
+}
+
+submitPackageDeal().then(console.log);</code></pre>
+                        </div>
+
+                        <!-- Go -->
+                        <div id="tab_go_tier" class="op-cb-code-tab-content op-cb-hidden">
+                            <pre class="op-cb-code-block"><code>package main
+
+import (
+    "bytes"
+    "encoding/json"
+    "fmt"
+    "net/http"
+)
+
+func main() {
+    payload := map[string]interface{}{
+        "bridge_token": "op_cb_YOUR_BRIDGE_TOKEN",
+        "tier_id":      "tier_6a1f8b", // Unique Deal ID copied from Bridge Manager
+        "items": []map[string]interface{}{
+            {"id": 14, "quantity": 2},
+        },
+        "customer": map[string]string{
+            "full_name": "Tanvir Hassan",
+            "phone":     "01812345678",
+            "address":   "House 45, Road 7, Mirpur 10, Dhaka",
+        },
+        "shipping": map[string]interface{}{
+            "id":    "inside_dhaka",
+            "label": "Inside Dhaka Delivery",
+            "cost":  80,
+        },
+    }
+
+    body, _ := json.Marshal(payload)
+    resp, err := http.Post("<?php echo esc_js($op_cb_site_rest_url . 'create-order'); ?>", "application/json", bytes.NewBuffer(body))
+    if err != nil {
+        panic(err)
+    }
+    defer resp.Body.Close()
+
+    var result map[string]interface{}
+    json.NewDecoder(resp.Body).Decode(&result)
+    fmt.Println(result)
+}</code></pre>
+                        </div>
+
+                        <!-- Ruby -->
+                        <div id="tab_ruby_tier" class="op-cb-code-tab-content op-cb-hidden">
+                            <pre class="op-cb-code-block"><code>require 'net/http'
+require 'json'
+require 'uri'
+
+uri = URI("<?php echo esc_js($op_cb_site_rest_url . 'create-order'); ?>")
+payload = {
+  bridge_token: 'op_cb_YOUR_BRIDGE_TOKEN',
+  tier_id:      'tier_6a1f8b', # Unique Deal ID copied from Bridge Manager
+  items: [
+    { id: 14, quantity: 2 }
+  ],
+  customer: {
+    full_name: 'Tanvir Hassan',
+    phone:     '01812345678',
+    address:   'House 45, Road 7, Mirpur 10, Dhaka'
+  },
+  shipping: {
+    id:    'inside_dhaka',
+    label: 'Inside Dhaka Delivery',
+    cost:  80
+  }
+}
+
+response = Net::HTTP.post(uri, payload.to_json, "Content-Type" => "application/json")
+puts response.body</code></pre>
+                        </div>
+
+                        <!-- cURL -->
+                        <div id="tab_curl_tier" class="op-cb-code-tab-content op-cb-hidden">
+                            <pre class="op-cb-code-block"><code>curl -X POST "<?php echo esc_js($op_cb_site_rest_url . 'create-order'); ?>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "bridge_token": "op_cb_YOUR_BRIDGE_TOKEN",
+    "tier_id": "tier_6a1f8b",
+    "items": [{"id": 14, "quantity": 2}],
+    "customer": {
+      "full_name": "Tanvir Hassan",
+      "phone": "01812345678",
+      "address": "House 45, Road 7, Mirpur 10, Dhaka"
+    },
+    "shipping": {
+      "id": "inside_dhaka",
+      "label": "Inside Dhaka Delivery",
+      "cost": 80
+    }
+  }'</code></pre>
+                        </div>
                     </div>
 
                 </div>

@@ -263,34 +263,76 @@ body[class*="checkoutbridge"] #wpfooter {
   align-items: start;
 }
 
-/* ── Form Layout (Strict Unified 20px Grid & Gaps) ─────────────────────────── */
+/* ── Form Layout (Full-Width Down-by-Down Single Column Stack) ─────────────── */
 .op-cb-form-layout {
-  display: grid !important;
-  grid-template-columns: minmax(0, 1fr) 340px !important;
-  gap: 20px !important;
-  align-items: start !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 24px !important;
+  align-items: stretch !important;
   width: 100% !important;
+  max-width: 1040px !important;
+  margin: 0 auto !important;
 }
 
 /* Form main column */
 .op-cb-form-main {
   display: flex !important;
   flex-direction: column !important;
-  gap: 20px !important;
+  gap: 24px !important;
+  width: 100% !important;
   min-width: 0 !important;
 }
 
-/* Sticky sidebar */
-.op-cb-form-sidebar {
-  align-self: start !important;
-  min-width: 0 !important;
+/* 3-Column Velocity Grid */
+.op-cb-velocity-grid {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 16px !important;
 }
 
-.op-cb-form-sidebar > .op-cb-card {
-  position: sticky !important;
-  top: 48px !important;
-  z-index: 20 !important;
-  margin-bottom: 0 !important;
+/* ── Table Filter Controls (Breathing Space & Justify-Between) ─────────────── */
+.op-cb-table-controls {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 16px !important;
+  padding: 18px 24px !important;
+  border-bottom: 1px solid var(--cb-border) !important;
+  background: var(--cb-surface) !important;
+  box-sizing: border-box !important;
+}
+
+.op-cb-table-controls .op-cb-search-box {
+  position: relative !important;
+  flex: 0 0 280px !important;
+  max-width: 100% !important;
+}
+
+.op-cb-table-controls .op-cb-search-box .op-cb-input {
+  width: 100% !important;
+  height: 40px !important;
+  padding-right: 2.25em !important;
+}
+
+.op-cb-table-controls .op-cb-search-box i {
+  position: absolute !important;
+  right: 0.85em !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  color: var(--cb-text-400) !important;
+  pointer-events: none !important;
+  font-size: 14px !important;
+}
+
+.op-cb-table-controls .op-cb-filter-group {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+
+.op-cb-table-controls .op-cb-filter-group .op-cb-select {
+  min-width: 150px !important;
+  height: 40px !important;
 }
 
 /* ── Cards ──────────────────────────────────────────────────────────────────── */
@@ -2166,6 +2208,26 @@ body.op-cb-modal-open {
   .op-cb-card-header h2 {
     white-space: normal !important;
     font-size: 15px !important;
+  }
+  .op-cb-table-controls {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+    padding: 14px 16px !important;
+  }
+  .op-cb-table-controls .op-cb-search-box {
+    flex: 1 1 auto !important;
+    width: 100% !important;
+  }
+  .op-cb-table-controls .op-cb-filter-group {
+    width: 100% !important;
+  }
+  .op-cb-table-controls .op-cb-filter-group .op-cb-select {
+    width: 100% !important;
+  }
+  .op-cb-velocity-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
   }
 }
 

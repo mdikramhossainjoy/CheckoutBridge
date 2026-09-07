@@ -7,7 +7,7 @@ Requires PHP: 7.4
 Requires Plugins: woocommerce
 WC requires at least: 5.0
 WC tested up to: 9.3
-Stable tag: 1.1.0
+Stable tag: 1.1.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -67,6 +67,11 @@ This plugin can optionally connect to an external third-party service:
   - Meta Privacy Policy: https://www.facebook.com/privacy/policy
 
 == Changelog ==
+
+= 1.1.1 =
+* UI: Enhanced Bridges Manager table filter controls with generous breathing room padding and horizontal justify-between alignment for search box and status dropdown.
+* UI: Transformed Bridge Manager form layout into a full single-column vertical stack ("down by down"), eliminating the cramped right-hand sidebar and expanding anti-bot velocity controls into a spacious 3-column grid.
+* Docs: Expanded Feature Guide: Quantity Package Deals (`tier_id`) to provide full multi-language code snippets across 8 platforms (JS Fetch, PHP cURL, React/Next.js, Python, Node.js, Go, Ruby, cURL CLI).
 
 = 1.1.0 =
 * Feature: Introduced Quantity Package Deals in Bridge Manager with Unique Deal IDs (`tier_id`) and one-click copy functionality.

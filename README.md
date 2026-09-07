@@ -4,7 +4,7 @@
 [![WooCommerce](https://img.shields.io/badge/WooCommerce-5.0%2B-purple.svg?style=for-the-badge&logo=woocommerce)](https://woocommerce.com)
 [![PHP](https://img.shields.io/badge/PHP-7.4%20%7C%208.0%20%7C%208.1%20%7C%208.2%20%7C%208.3-777BB4.svg?style=for-the-badge&logo=php)](https://php.net)
 [![License](https://img.shields.io/badge/License-GPLv2-green.svg?style=for-the-badge)](README.txt)
-[![Version](https://img.shields.io/badge/Version-1.1.0-indigo.svg?style=for-the-badge)](checkoutbridge.php)
+[![Version](https://img.shields.io/badge/Version-1.1.1-indigo.svg?style=for-the-badge)](checkoutbridge.php)
 
 > **Enterprise Headless Cash on Delivery (COD) & REST API Order Engine for WooCommerce.**
 > Connect custom landing pages (built in React, Next.js, Laravel, Vue, PHP, Python, Node.js, Go, or HTML) directly to WooCommerce while maintaining WooCommerce as the single source of truth for inventory, pricing, order fulfillment, and analytics.
@@ -119,6 +119,11 @@ This plugin can optionally connect to an external third-party service:
 ---
 
 ## Changelog
+
+### v1.1.1
+* **Bridges Manager Table Controls**: Added generous breathing space padding (`18px 24px`) and horizontal `justify-between` alignment for search bar and status filter dropdown with responsive mobile stacking.
+* **Full Single-Column Form Layout**: Transformed Bridge Manager edit/add form into a clean vertical sequence ("down by down"), eliminating the cramped right sidebar and expanding anti-bot velocity limits into a spacious 3-column grid.
+* **Full Multi-Platform Documentation**: Upgraded the Quantity Package Deals feature guide to include complete interactive code examples across all 8 supported platforms (JS Fetch, PHP cURL, React/Next.js, Python, Node.js, Go, Ruby, cURL CLI).
 
 ### v1.1.0
 * **Quantity Package Deals**: Introduced multi-pack bundle pricing in Bridge Manager. Set fixed total prices for specific item quantities with auto-generated Unique Deal IDs (`tier_id`) and one-click copy functionality.

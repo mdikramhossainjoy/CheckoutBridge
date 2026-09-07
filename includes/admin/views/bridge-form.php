@@ -94,10 +94,7 @@ if (class_exists('WooCommerce')) {
 
         <div class="op-cb-form-layout">
 
-            <!-- ── Main Column ── -->
-            <div class="op-cb-form-main">
-
-                <!-- Basic Info Card -->
+            <!-- Basic Info Card -->
                 <div class="op-cb-card">
                     <div class="op-cb-card-header">
                         <h2>
@@ -465,15 +462,13 @@ if (class_exists('WooCommerce')) {
                     </div>
                 </div>
 
-            </div><!-- /op-cb-form-main -->
-
-            <!-- ── Sidebar ── -->
-            <div class="op-cb-form-sidebar">
+                <!-- ── Section 5: Status & Token ── -->
                 <div class="op-cb-card">
                     <div class="op-cb-card-header">
                         <h2>
                             <span class="op-cb-section-num">5</span>
-                            <?php esc_html_e('Status & Token', 'op-checkoutbridge'); ?>
+                            <i class="fa-solid fa-sliders" style="color:var(--cb-indigo-600);margin-right:6px;"></i>
+                            <?php esc_html_e('Status, Anti-Bot & Bridge Token', 'op-checkoutbridge'); ?>
                         </h2>
                     </div>
                     <div class="op-cb-card-body">
@@ -507,23 +502,26 @@ if (class_exists('WooCommerce')) {
                                 <i class="fa-solid fa-shield-halved" style="margin-right:4px;"></i>
                                 <?php esc_html_e('Dual-Shield Anti-Bot Protection', 'op-checkoutbridge'); ?>
                             </label>
-                            <div style="font-size:12px;color:var(--cb-text-500);margin:4px 0 10px 0;">
+                            <div style="font-size:12px;color:var(--cb-text-500);margin:4px 0 12px 0;">
                                 <?php esc_html_e('Limits COD orders per phone & IP to block spam bots globally.', 'op-checkoutbridge'); ?>
                             </div>
                             
-                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+                            <div class="op-cb-velocity-grid">
                                 <div>
-                                    <label for="op_cb_phone_limit" style="font-size:11.5px;font-weight:600;"><?php esc_html_e('Max per Number', 'op-checkoutbridge'); ?></label>
+                                    <label for="op_cb_phone_limit" style="font-size:12px;font-weight:600;"><?php esc_html_e('Max per Number', 'op-checkoutbridge'); ?></label>
                                     <input type="number" min="0" max="10" name="phone_velocity_limit" id="op_cb_phone_limit" class="op-cb-input" value="<?php echo esc_attr(isset($op_cb_landing['phone_velocity_limit']) ? $op_cb_landing['phone_velocity_limit'] : 1); ?>">
+                                    <p class="op-cb-field-hint"><?php esc_html_e('Max COD orders allowed per unique phone.', 'op-checkoutbridge'); ?></p>
                                 </div>
                                 <div>
-                                    <label for="op_cb_ip_limit" style="font-size:11.5px;font-weight:600;"><?php esc_html_e('Max per IP', 'op-checkoutbridge'); ?></label>
+                                    <label for="op_cb_ip_limit" style="font-size:12px;font-weight:600;"><?php esc_html_e('Max per IP', 'op-checkoutbridge'); ?></label>
                                     <input type="number" min="0" max="20" name="ip_velocity_limit" id="op_cb_ip_limit" class="op-cb-input" value="<?php echo esc_attr(isset($op_cb_landing['ip_velocity_limit']) ? $op_cb_landing['ip_velocity_limit'] : 3); ?>">
+                                    <p class="op-cb-field-hint"><?php esc_html_e('Max COD orders allowed per client IP.', 'op-checkoutbridge'); ?></p>
                                 </div>
-                            </div>
-                            <div>
-                                <label for="op_cb_velocity_hours" style="font-size:11.5px;font-weight:600;"><?php esc_html_e('Time Window (Hours)', 'op-checkoutbridge'); ?></label>
-                                <input type="number" min="1" max="168" name="velocity_hours" id="op_cb_velocity_hours" class="op-cb-input" value="<?php echo esc_attr(isset($op_cb_landing['velocity_hours']) ? $op_cb_landing['velocity_hours'] : 24); ?>">
+                                <div>
+                                    <label for="op_cb_velocity_hours" style="font-size:12px;font-weight:600;"><?php esc_html_e('Time Window (Hours)', 'op-checkoutbridge'); ?></label>
+                                    <input type="number" min="1" max="168" name="velocity_hours" id="op_cb_velocity_hours" class="op-cb-input" value="<?php echo esc_attr(isset($op_cb_landing['velocity_hours']) ? $op_cb_landing['velocity_hours'] : 24); ?>">
+                                    <p class="op-cb-field-hint"><?php esc_html_e('Rolling rate-limit inspection window.', 'op-checkoutbridge'); ?></p>
+                                </div>
                             </div>
                         </div>
 
@@ -577,7 +575,11 @@ if (class_exists('WooCommerce')) {
                         </div>
 
                     </div>
-                    <div class="op-cb-card-footer">
+                    <div class="op-cb-card-footer" style="display:flex;justify-content:space-between;align-items:center;">
+                        <a href="<?php echo esc_url(admin_url('admin.php?page=checkoutbridge-bridges')); ?>" class="button button-secondary">
+                            <i class="fa-solid fa-arrow-left" style="margin-right:4px;"></i>
+                            <?php esc_html_e('Cancel & Back', 'op-checkoutbridge'); ?>
+                        </a>
                         <button type="submit" class="button button-primary button-hero">
                             <i class="fa-solid fa-check" style="margin-right:4px;"></i>
                             <?php echo $op_cb_is_edit
@@ -586,7 +588,6 @@ if (class_exists('WooCommerce')) {
                         </button>
                     </div>
                 </div>
-            </div><!-- /op-cb-form-sidebar -->
 
         </div>
     </form>
